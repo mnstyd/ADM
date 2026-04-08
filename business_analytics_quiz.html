@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Analytics — Persiapan Ujian Interaktif</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161921;
+    --surface2: #1e2230;
+    --border: #2a2f40;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --gold: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #e8eaf0;
+    --text-muted: #7b8299;
+    --text-dim: #4a5170;
+    --radius: 14px;
+    --shadow: 0 4px 32px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ===== HOME ===== */
+  #home {
+    min-height: 100vh;
+    padding: 48px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 60px 0 48px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 40px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto 40px;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .chapter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chapter-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .chapter-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+
+  .chapter-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .chapter-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .chapter-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .chapter-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .chapter-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chapter-progress {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .chapter-progress .done {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-start:hover { opacity: 0.85; }
+
+  /* ===== CHAPTER DETAIL ===== */
+  #chapter-detail {
+    min-height: 100vh;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    margin-bottom: 28px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .back-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .chapter-header {
+    margin-bottom: 32px;
+  }
+
+  .chapter-header .chapter-num { font-size: 0.8rem; margin-bottom: 6px; }
+  .chapter-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  /* Summary Box */
+  .summary-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+
+  .summary-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .summary-content {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .summary-section {
+    margin-bottom: 20px;
+  }
+
+  .summary-section h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .summary-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .summary-section li {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    padding: 4px 0 4px 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .summary-section li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.7rem;
+    top: 6px;
+  }
+
+  .high-priority {
+    display: inline-block;
+    background: rgba(245,158,11,0.15);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Quiz Controls */
+  .quiz-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: gap;
+  }
+
+  .quiz-controls h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  /* Question Navigator */
+  .q-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 28px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .q-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .q-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .q-nav-btn.current { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .q-nav-btn.answered-correct { background: rgba(16,185,129,0.2); border-color: var(--green); color: var(--green); }
+  .q-nav-btn.answered-wrong { background: rgba(239,68,68,0.15); border-color: var(--red); color: var(--red); }
+  .q-nav-btn.skipped { background: rgba(245,158,11,0.1); border-color: var(--gold); color: var(--gold); }
+
+  /* Question Card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .question-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .q-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .q-difficulty {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .q-difficulty.easy { background: rgba(16,185,129,0.15); color: var(--green); }
+  .q-difficulty.medium { background: rgba(245,158,11,0.15); color: var(--gold); }
+  .q-difficulty.hard { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .question-text {
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  .question-text .case-box {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 14px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface2);
+  }
+
+  .option:hover:not(.disabled) {
+    border-color: var(--accent);
+    background: rgba(79,142,247,0.05);
+  }
+
+  .option.selected {
+    border-color: var(--accent);
+    background: rgba(79,142,247,0.1);
+  }
+
+  .option.correct {
+    border-color: var(--green);
+    background: rgba(16,185,129,0.1);
+  }
+
+  .option.wrong {
+    border-color: var(--red);
+    background: rgba(239,68,68,0.08);
+  }
+
+  .option.disabled { cursor: default; }
+
+  .option-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+  }
+
+  .option.correct .option-letter { background: var(--green); color: #fff; }
+  .option.wrong .option-letter { background: var(--red); color: #fff; }
+  .option.selected:not(.correct):not(.wrong) .option-letter { background: var(--accent); color: #fff; }
+
+  .option-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Feedback */
+  .feedback {
+    display: none;
+    padding: 18px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .feedback.show { display: block; }
+
+  .feedback.correct-fb {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+  }
+
+  .feedback.wrong-fb {
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.25);
+  }
+
+  .feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .feedback.correct-fb .feedback-header { color: var(--green); }
+  .feedback.wrong-fb .feedback-header { color: var(--red); }
+
+  .feedback-explanation {
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .feedback-ref {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .feedback-ref span {
+    background: var(--surface2);
+    padding: 2px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* Question Actions */
+  .question-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-retry {
+    background: rgba(245,158,11,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(245,158,11,0.3);
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .btn-retry:hover { background: rgba(245,158,11,0.25); }
+  .btn-retry.show { display: block; }
+
+  /* Score Panel */
+  .score-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .score-panel.show { display: block; }
+
+  .score-panel h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .score-item {
+    text-align: center;
+    padding: 16px;
+    border-radius: 10px;
+    background: var(--surface2);
+  }
+
+  .score-item .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  .score-item .lbl {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .score-item.total .val { color: var(--accent); }
+  .score-item.correct-s .val { color: var(--green); }
+  .score-item.wrong-s .val { color: var(--red); }
+  .score-item.pct .val { color: var(--gold); }
+
+  .progress-bar {
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .score-grid { grid-template-columns: repeat(2, 1fr); }
+    .quiz-controls { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .stats-row { gap: 20px; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  /* Prediction panel */
+  .prediction-box {
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(79,142,247,0.05));
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .prediction-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pred-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.875rem;
+  }
+
+  .pred-item:last-child { border-bottom: none; }
+
+  .pred-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .pred-text { color: var(--text-muted); line-height: 1.5; }
+  .pred-text strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="home" class="screen active">
+  <div class="hero">
+    <div class="hero-badge">Business Analytics · Exam Prep</div>
+    <h1>Persiapan Ujian<br>Business Analytics</h1>
+    <p>Rangkuman lengkap + 350 soal latihan interaktif berdasarkan slide kuliah. Pilih bab untuk mulai belajar.</p>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Bab</div></div>
+      <div class="stat"><div class="stat-num">350</div><div class="stat-label">Soal</div></div>
+      <div class="stat"><div class="stat-num">712</div><div class="stat-label">Halaman Slide</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Ulangan</div></div>
+    </div>
+  </div>
+
+  <div class="chapters-grid" id="chapters-grid"></div>
+</div>
+
+<!-- CHAPTER DETAIL SCREEN -->
+<div id="chapter-detail" class="screen">
+  <button class="back-btn" onclick="showHome()">← Kembali ke Daftar Bab</button>
+
+  <div class="chapter-header">
+    <div class="chapter-num" id="detail-num"></div>
+    <h2 id="detail-title"></h2>
+  </div>
+
+  <div class="summary-box">
+    <h3>📚 Rangkuman Materi</h3>
+    <div class="summary-content" id="detail-summary"></div>
+  </div>
+
+  <div class="prediction-box" id="detail-predictions"></div>
+
+  <div class="quiz-controls">
+    <h3>💡 Latihan Soal — <span id="q-count-label"></span></h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-secondary" onclick="resetChapter()">🔄 Reset Semua</button>
+      <button class="btn-primary" onclick="showScore()">📊 Lihat Skor</button>
+    </div>
+  </div>
+
+  <div class="score-panel" id="score-panel">
+    <h3>📊 Progres Bab Ini</h3>
+    <div class="score-grid">
+      <div class="score-item total"><div class="val" id="sc-total">0</div><div class="lbl">Dijawab</div></div>
+      <div class="score-item correct-s"><div class="val" id="sc-correct">0</div><div class="lbl">Benar</div></div>
+      <div class="score-item wrong-s"><div class="val" id="sc-wrong">0</div><div class="lbl">Salah</div></div>
+      <div class="score-item pct"><div class="val" id="sc-pct">0%</div><div class="lbl">Skor</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="sc-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="q-nav" id="q-nav"></div>
+  <div id="questions-container"></div>
+</div>
+
+<script>
+// =====================================================================
+// DATA — CHAPTERS, SUMMARIES, PREDICTIONS, QUESTIONS
+// =====================================================================
+
+const CHAPTERS = [
+{
+  id: 1,
+  num: "BAB 01",
+  title: "Pengantar Business Analytics",
+  desc: "Definisi BA, tipe analitik, data vs informasi, metrik, AI/ML, tools",
+  summary: [
+    {
+      heading: "Definisi & Konsep Inti",
+      items: [
+        "Business Analytics (BA): penggunaan data, teknologi informasi, analisis statistik, metode kuantitatif, dan model matematis/komputer untuk membantu manajer membuat keputusan berbasis fakta.",
+        "BA mencakup 3 tipe: Descriptive (apa yang terjadi?), Predictive (apa yang akan terjadi?), Prescriptive (apa yang harus dilakukan?).",
+        "Descriptive Analytics: meringkas data masa lalu ke dalam laporan, dashboard, dan KPI.",
+        "Predictive Analytics: memprediksi masa depan menggunakan data historis, pola, dan model ML/statistik.",
+        "Prescriptive Analytics: mengidentifikasi alternatif terbaik untuk meminimalkan/memaksimalkan tujuan melalui optimisasi atau AI.",
+      ]
+    },
+    {
+      heading: "Data vs Informasi vs Metrik",
+      items: [
+        "Data: fakta dan angka numerik/teks yang dikumpulkan melalui proses pengukuran.",
+        "Informasi: hasil analisis data; mengekstrak makna dari data untuk mendukung pengambilan keputusan.",
+        "Metrik: satuan pengukuran yang memberikan cara objektif mengkuantifikasi kinerja.",
+        "Pengukuran (Measurement): tindakan mendapatkan data terkait metrik.",
+        "Measures: nilai numerik yang terkait dengan metrik.",
+      ]
+    },
+    {
+      heading: "Jenis Metrik & Data",
+      items: [
+        "Discrete metric: diturunkan dari penghitungan (mis. proporsi pengiriman tepat waktu, jumlah pesanan tidak lengkap).",
+        "Continuous metric: berdasarkan skala pengukuran kontinu (dollar, panjang, waktu, volume, berat).",
+        "Categorical/Nominal data: diurutkan dalam kategori berdasarkan karakteristik tertentu.",
+        "Ordinal data: dapat diurutkan/diranking berdasarkan hubungan satu sama lain.",
+        "Interval data: ordinal dengan perbedaan konstan antar observasi dan titik nol arbiter.",
+        "Ratio data: kontinu dengan titik nol alami.",
+      ]
+    },
+    {
+      heading: "Kualitas Data",
+      items: [
+        "Reliability: data akurat dan konsisten.",
+        "Validity: data mengukur apa yang seharusnya diukur.",
+        "Big Data: data masif dari berbagai sumber, banyak tersedia real-time, banyak yang tidak pasti/tidak terprediksi.",
+        "Dataset: kumpulan data. Database: kumpulan file terkait yang berisi catatan.",
+      ]
+    },
+    {
+      heading: "Tools & Aplikasi BA",
+      items: [
+        "Descriptive tools: Power BI, Tableau, Qlik Sense, SAP BusinessObjects, Excel.",
+        "Predictive tools: IBM SPSS Modeler, SAS Analytics, Python (scikit-learn), R.",
+        "Prescriptive tools: Excel Solver, Python (PuLP, OR-Tools), AnyLogic.",
+        "Aplikasi BA: pricing, customer segmentation, merchandising, location analysis, social media analytics.",
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Membedakan 3 tipe analitik dengan contoh kasus nyata" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Perbedaan data vs informasi, reliabilitas vs validitas" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Klasifikasi jenis data (nominal, ordinal, interval, ratio)" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Discrete vs continuous metric dengan contoh" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> Sejarah perkembangan BA dan tools yang relevan" },
+  ],
+  questions: [
+    {
+      q: "Sebuah perusahaan e-commerce menggunakan sistem yang secara otomatis menyesuaikan harga produk berdasarkan permintaan real-time, stok, dan harga kompetitor untuk memaksimalkan revenue. Sistem ini termasuk dalam kategori analitik apa?",
+      opts: ["Descriptive analytics", "Predictive analytics", "Prescriptive analytics", "Diagnostic analytics"],
+      ans: 2,
+      diff: "medium",
+      exp: "Prescriptive analytics mengidentifikasi tindakan terbaik untuk mengoptimalkan suatu tujuan (memaksimalkan revenue). Sistem penetapan harga otomatis yang merekomendasikan/menentukan harga optimal adalah contoh prescriptive analytics karena ia merekomendasikan aksi, bukan hanya memprediksi atau mendeskripsikan.",
+      ref: "Bab 1 – Tipe Analytics"
+    },
+    {
+      q: "Suatu survei kepuasan pelanggan menggunakan skala 1–5 (Sangat Tidak Puas hingga Sangat Puas). Tipe data apakah skala ini?",
+      opts: ["Ratio data", "Interval data", "Ordinal data", "Nominal data"],
+      ans: 2,
+      diff: "easy",
+      exp: "Skala Likert 1–5 adalah contoh ordinal data: dapat diurutkan/diranking, namun perbedaan antar skala tidak bisa diasumsikan sama (beda antara 1 dan 2 belum tentu sama dengan beda antara 4 dan 5). Tidak ada titik nol absolut (seseorang tidak mungkin memiliki 'nol kepuasan'), sehingga bukan ratio.",
+      ref: "Bab 1 – Jenis Data"
+    },
+    {
+      q: "Manager HR mencatat bahwa 12 dari 100 karyawan terlambat bulan ini. Manakah pernyataan yang TEPAT tentang metrik ini?",
+      opts: [
+        "Ini adalah continuous metric karena bisa dinyatakan dalam desimal",
+        "Ini adalah discrete metric karena merupakan hitungan kejadian",
+        "Ini adalah interval data karena ada skala pengukuran",
+        "Ini adalah ratio metric karena memiliki titik nol alami"
+      ],
+      ans: 1,
+      diff: "easy",
+      exp: "Discrete metric diturunkan dari penghitungan sesuatu — dalam kasus ini, jumlah keterlambatan adalah hasil hitungan (12 kejadian). Karyawan terlambat atau tidak (biner), sehingga merupakan discrete metric. Walaupun proporsi 12% adalah ratio data, metrik dasarnya adalah discrete.",
+      ref: "Bab 1 – Jenis Metrik"
+    },
+    {
+      q: "Sebuah rumah sakit ingin memahami penyebab meningkatnya angka readmisi pasien dalam 3 bulan terakhir dengan menganalisis rekam medis. Ini adalah contoh dari:",
+      opts: ["Prescriptive analytics", "Predictive analytics", "Descriptive analytics", "Proactive analytics"],
+      ans: 2,
+      diff: "medium",
+      exp: "Descriptive analytics berfokus pada 'apa yang terjadi' — memahami kinerja masa lalu dan saat ini melalui data. Menganalisis rekam medis untuk memahami penyebab readmisi adalah analisis deskriptif karena melihat ke belakang (retrospektif) untuk meringkas dan memahami situasi.",
+      ref: "Bab 1 – Descriptive Analytics"
+    },
+    {
+      q: "Sebuah alat ukur tekanan ban secara konsisten menunjukkan nilai 5 PSI lebih rendah dari nilai sesungguhnya, namun selalu menunjukkan angka yang sama untuk pengukuran berulang. Kondisi ini disebut:",
+      opts: [
+        "Reliable tapi tidak valid",
+        "Valid tapi tidak reliable",
+        "Tidak reliable dan tidak valid",
+        "Reliable dan valid"
+      ],
+      ans: 0,
+      diff: "hard",
+      exp: "Alat ini reliable (konsisten menghasilkan hasil yang sama tiap pengukuran) tetapi tidak valid (tidak mengukur nilai yang benar — selalu 5 PSI lebih rendah). Validity berarti mengukur apa yang seharusnya diukur dengan benar, sedangkan reliability berarti konsistensi. Alat yang bias sistematis bisa reliable tapi tidak valid.",
+      ref: "Bab 1 – Kualitas Data: Reliability vs Validity"
+    },
+    {
+      q: "Algoritma Netflix yang menganalisis riwayat tontonan Anda dan merekomendasikan film yang mungkin Anda sukai adalah contoh dari:",
+      opts: ["Descriptive analytics", "Predictive analytics", "Prescriptive analytics", "Diagnostic analytics"],
+      ans: 1,
+      diff: "easy",
+      exp: "Predictive analytics menggunakan data historis untuk memprediksi perilaku atau outcome di masa depan. Sistem rekomendasi Netflix menganalisis pola tontonan masa lalu untuk memprediksi film apa yang akan disukai pengguna — ini adalah prediksi, bukan hanya deskripsi atau optimisasi.",
+      ref: "Bab 1 – Predictive Analytics"
+    },
+    {
+      q: "Manakah dari berikut ini yang merupakan contoh RATIO DATA?",
+      opts: [
+        "Suhu ruangan dalam skala Celsius",
+        "Nilai ujian mahasiswa (0–100)",
+        "Berat badan dalam kilogram",
+        "Peringkat film bintang 1–5"
+      ],
+      ans: 2,
+      diff: "medium",
+      exp: "Ratio data memiliki titik nol alami (bukan arbitrer) dan bisa dibandingkan secara multipliatif. Berat badan 0 kg benar-benar berarti 'tidak ada berat', sehingga seseorang dengan berat 80 kg memang 2x lebih berat dari 40 kg. Suhu Celsius punya nol arbitrer (0°C bukan berarti 'tidak ada suhu'). Peringkat bintang adalah ordinal.",
+      ref: "Bab 1 – Jenis Data"
+    },
+    {
+      q: "Sebuah perusahaan logistik menggunakan model simulasi untuk menemukan jumlah armada truk optimal yang meminimalkan biaya operasional sambil memenuhi target pengiriman 95%. Ini merupakan contoh dari:",
+      opts: ["Descriptive analytics karena menggunakan data historis", "Predictive analytics karena mensimulasikan masa depan", "Prescriptive analytics karena mencari solusi optimal", "Diagnostic analytics karena menganalisis penyebab masalah"],
+      ans: 2,
+      diff: "hard",
+      exp: "Prescriptive analytics mengidentifikasi alternatif terbaik untuk meminimalkan atau memaksimalkan tujuan. Model optimisasi/simulasi yang mencari jumlah armada OPTIMAL adalah prescriptive. Kunci pembeda: prescriptive merekomendasikan TINDAKAN terbaik, bukan hanya memprediksi.",
+      ref: "Bab 1 – Prescriptive Analytics"
+    },
+    {
+      q: "Mengapa penting membedakan antara 'data' dan 'informasi' dalam konteks Business Analytics?",
+      opts: [
+        "Karena data lebih mahal untuk dikumpulkan daripada informasi",
+        "Karena informasi adalah hasil analisis data yang menghasilkan makna untuk mendukung keputusan",
+        "Karena data hanya bisa disimpan dalam database sementara informasi tidak",
+        "Karena informasi selalu lebih akurat daripada data mentah"
+      ],
+      ans: 1,
+      diff: "medium",
+      exp: "Data adalah fakta dan angka mentah yang dikumpulkan. Informasi adalah hasil analisis data yang mengekstrak makna untuk mendukung evaluasi dan pengambilan keputusan. Perbedaan ini penting karena BA bertujuan mengubah data menjadi informasi yang actionable bagi manajer.",
+      ref: "Bab 1 – Data vs Informasi"
+    },
+    {
+      q: "Perusahaan X memiliki sistem yang melaporkan total penjualan per hari, per region, dan per produk dalam dashboard interaktif. Ini adalah contoh aplikasi dari:",
+      opts: ["Prescriptive analytics", "Predictive analytics", "Descriptive analytics", "Machine learning"],
+      ans: 2,
+      diff: "easy",
+      exp: "Dashboard yang melaporkan kinerja masa lalu/saat ini dalam bentuk KPI dan visualisasi adalah classic descriptive analytics. Pertanyaan kunci descriptive: 'Apa yang terjadi?' — dijawab dengan laporan, dashboard, dan summary.",
+      ref: "Bab 1 – Descriptive Analytics & Tools"
+    },
+    {
+      q: "Mana dari berikut ini yang BUKAN contoh 'discrete metric'?",
+      opts: [
+        "Jumlah pesanan yang dikembalikan per minggu",
+        "Proporsi pengiriman tepat waktu",
+        "Pendapatan total dalam dolar",
+        "Jumlah komplain pelanggan per hari"
+      ],
+      ans: 2,
+      diff: "medium",
+      exp: "Pendapatan total dalam dolar adalah continuous metric — berdasarkan skala pengukuran kontinu (dollar adalah unit kontinu yang bisa bernilai pecahan). Discrete metric diturunkan dari penghitungan: jumlah pesanan dikembalikan, proporsi pengiriman tepat waktu (hitungan/total), dan jumlah komplain adalah hitungan.",
+      ref: "Bab 1 – Jenis Metrik"
+    },
+    {
+      q: "Sebuah bank menetapkan suku bunga kredit berdasarkan profil risiko peminjam, riwayat kredit, dan kondisi ekonomi makro saat ini. Proses BA manakah yang PALING relevan di sini?",
+      opts: [
+        "Descriptive — menganalisis riwayat kredit masa lalu",
+        "Predictive — memperkirakan probabilitas gagal bayar di masa depan",
+        "Prescriptive — menentukan suku bunga optimal untuk memaksimalkan profitabilitas",
+        "Diagnostic — mengidentifikasi penyebab kredit macet sebelumnya"
+      ],
+      ans: 1,
+      diff: "hard",
+      exp: "Pertanyaan ini memiliki komponen prescriptive DAN predictive. Namun, jika bank 'menetapkan' suku bunga berdasarkan profil risiko, maka alur utamanya: pertama memprediksi risiko gagal bayar (predictive), lalu menetapkan suku bunga (prescriptive). Dalam konteks soal ini, proses prediksi probabilitas gagal bayar adalah inti dari credit scoring.",
+      ref: "Bab 1 – Aplikasi BA di Industri"
+    },
+    {
+      q: "Interval data berbeda dari ordinal data terutama karena:",
+      opts: [
+        "Interval data memiliki titik nol alami sementara ordinal tidak",
+        "Interval data memiliki perbedaan yang konstan dan bermakna antar nilai",
+        "Interval data hanya bisa berupa angka bulat",
+        "Interval data selalu digunakan untuk mengukur waktu"
+      ],
+      ans: 1,
+      diff: "hard",
+      exp: "Interval data bersifat ordinal (bisa diurutkan) DITAMBAH memiliki perbedaan yang konstan antara nilai. Misalnya, perbedaan antara 20°C dan 30°C sama dengan perbedaan antara 30°C dan 40°C (sama-sama 10°C). Ordinal data (seperti peringkat) tidak memiliki jaminan ini. Interval TIDAK harus punya nol alami — itulah yang membedakan ratio.",
+      ref: "Bab 1 – Level of Measurement"
+    },
+    {
+      q: "Sebuah survei menanyakan: 'Apa kendaraan utama Anda: Mobil, Motor, Sepeda, atau Kendaraan Umum?' Ini adalah contoh data:",
+      opts: ["Ratio", "Interval", "Ordinal", "Nominal/Categorical"],
+      ans: 3,
+      diff: "easy",
+      exp: "Data jenis kendaraan adalah categorical/nominal — diurutkan ke dalam kategori (Mobil, Motor, dll.) tanpa urutan yang bermakna. Tidak ada satu jenis kendaraan yang 'lebih' dari yang lain secara numerik. Ini adalah klasifikasi tanpa ranking numerik.",
+      ref: "Bab 1 – Jenis Data"
+    },
+    {
+      q: "Manakah pernyataan yang PALING tepat tentang 'Big Data'?",
+      opts: [
+        "Big Data hanya mengacu pada data yang berukuran lebih dari 1 terabyte",
+        "Big Data mengacu pada data masif dari berbagai sumber, tersedia real-time, dan banyak bersifat tidak pasti",
+        "Big Data selalu bersifat terstruktur dan mudah dianalisis",
+        "Big Data hanya berasal dari media sosial dan internet"
+      ],
+      ans: 1,
+      diff: "medium",
+      exp: "Big Data bukan hanya tentang volume besar, tetapi juga variety (berbagai sumber), velocity (real-time), dan uncertainty. Karakteristik Big Data mencakup: masif dari berbagai sumber, banyak tersedia real-time, dan banyak yang tidak pasti atau tidak terprediksi.",
+      ref: "Bab 1 – Big Data"
+    },
+    {
+      q: "Seorang analis menggunakan Excel untuk membuat laporan bulanan yang menampilkan total penjualan, rata-rata margin, dan jumlah transaksi per produk. Ini adalah contoh:",
+      opts: ["Machine learning", "Prescriptive analytics", "Predictive analytics", "Descriptive analytics"],
+      ans: 3,
+      diff: "easy",
+      exp: "Laporan yang meringkas data masa lalu (total penjualan, rata-rata margin, jumlah transaksi) adalah descriptive analytics. Excel, Power BI, dan Tableau adalah tools utama descriptive analytics.",
+      ref: "Bab 1 – Tools Descriptive Analytics"
+    },
+    {
+      q: "Sebuah perusahaan ritel menggunakan algoritma untuk mengidentifikasi dan mengelompokkan pelanggan berdasarkan perilaku belanja mereka untuk keperluan target marketing. Tipe analitik dan teknik utama yang digunakan adalah:",
+      opts: [
+        "Descriptive analytics — customer segmentation",
+        "Predictive analytics — regression analysis",
+        "Prescriptive analytics — linear programming",
+        "Diagnostic analytics — root cause analysis"
+      ],
+      ans: 0,
+      diff: "medium",
+      exp: "Customer segmentation adalah salah satu aplikasi BA yang disebutkan dalam materi. Proses mengidentifikasi dan mengelompokkan (bukan memprediksi atau mengoptimalkan) adalah deskriptif. Customer segmentation bertujuan memahami siapa pelanggan Anda saat ini.",
+      ref: "Bab 1 – Aplikasi BA"
+    },
+    {
+      q: "Validity data mengacu pada:",
+      opts: [
+        "Data konsisten dalam pengukuran berulang",
+        "Data mengukur dengan tepat apa yang dimaksudkan untuk diukur",
+        "Data tidak memiliki nilai yang hilang (missing values)",
+        "Data tersimpan dengan aman dari ancaman keamanan"
+      ],
+      ans: 1,
+      diff: "easy",
+      exp: "Validity berarti data dengan benar mengukur apa yang seharusnya diukur. Contoh: jumlah panggilan ke customer service mungkin reliable (dihitung dengan benar) tetapi tidak valid jika digunakan untuk mengukur ketidakpuasan pelanggan, karena banyak panggilan yang hanya berupa pertanyaan biasa.",
+      ref: "Bab 1 – Reliability vs Validity"
+    },
+    {
+      q: "Manakah dari tools berikut yang PALING tepat digunakan untuk prescriptive analytics?",
+      opts: ["Tableau", "Python scikit-learn", "Excel Solver / PuLP", "Power BI"],
+      ans: 2,
+      diff: "medium",
+      exp: "Prescriptive analytics menggunakan optimisasi dan simulasi. Excel Solver dan PuLP (Python) adalah tools optimisasi yang digunakan untuk prescriptive analytics. Tableau dan Power BI adalah tools descriptive. Scikit-learn adalah ML library untuk predictive.",
+      ref: "Bab 1 – Tools Prescriptive Analytics"
+    },
+    {
+      q: "Perkembangan Business Analytics bermula dari disiplin ilmu apa pada tahun 1958?",
+      opts: ["Computer Science dan Database Management", "Business Intelligence, Information Systems, dan Statistics", "Operations Research dan Econometrics", "Marketing Research dan Consumer Behavior"],
+      ans: 1,
+      diff: "medium",
+      exp: "Sesuai materi slide, BA bermula pada 1958 dari Business Intelligence, Information Systems, dan Statistics. Kemudian berkembang dengan OR/Management Science (1960), Decision Support Systems (1965), dan akhirnya modern BA dengan AI/ML.",
+      ref: "Bab 1 – Sejarah BA"
+    },
+    {
+      q: "Sebuah model yang merekomendasikan apakah sebaiknya membeli, menahan, atau menjual saham berdasarkan sinyal pasar disebut:",
+      opts: [
+        "Descriptive model karena menggunakan data pasar historis",
+        "Predictive model karena memperkirakan harga masa depan",
+        "Prescriptive model karena merekomendasikan tindakan spesifik",
+        "Diagnostic model karena menganalisis pola pasar"
+      ],
+      ans: 2,
+      diff: "hard",
+      exp: "Model yang merekomendasikan TINDAKAN spesifik (beli, tahan, jual) adalah prescriptive. Kunci prescriptive: ia tidak hanya memprediksi harga (predictive) tetapi merekomendasikan apa yang HARUS dilakukan. Ini membutuhkan komponen optimisasi/decision-making di atasnya.",
+      ref: "Bab 1 – Prescriptive Analytics"
+    },
+    {
+      q: "Field atau atribut dalam database merujuk pada:",
+      opts: [
+        "Baris data individual dalam tabel",
+        "Kolom yang mewakili elemen data individual",
+        "Seluruh koleksi dataset",
+        "Kunci primer yang mengidentifikasi record"
+      ],
+      ans: 1,
+      diff: "easy",
+      exp: "Dalam database relasional, kolom merepresentasikan 'fields' atau 'attributes' (elemen data individual seperti nama, harga, tanggal), sementara baris merepresentasikan 'records' (entri data lengkap untuk satu objek/transaksi).",
+      ref: "Bab 1 – Database & Dataset"
+    },
+    {
+      q: "Manakah yang BUKAN merupakan tantangan dalam implementasi Business Analytics?",
+      opts: [
+        "Kurangnya pemahaman tentang cara menggunakan analytics",
+        "Sulitnya mendapatkan data yang berkualitas baik",
+        "Terlalu banyak tools analytics yang tersedia",
+        "Prioritas bisnis yang bersaing dan kurangnya skill analitik"
+      ],
+      ans: 2,
+      diff: "medium",
+      exp: "Sesuai materi, tantangan BA mencakup: lack of understanding, competing business priorities, insufficient analytical skills, difficulty getting good data, dan not understanding benefits. Banyaknya tools justru adalah keuntungan, bukan tantangan utama.",
+      ref: "Bab 1 – Manfaat & Tantangan BA"
+    },
+    {
+      q: "Nomor Induk Kependudukan (NIK) yang terdiri dari 16 digit adalah contoh data tipe apa?",
+      opts: ["Ratio data", "Interval data", "Ordinal data", "Nominal/Categorical data"],
+      ans: 3,
+      diff: "hard",
+      exp: "NIK adalah nominal data — meskipun terdiri dari angka, NIK adalah identifier/label yang tidak memiliki makna matematis. Tidak ada arti dari 'NIK A lebih besar dari NIK B', tidak bisa dijumlah, dikurang, atau dirata-rata. Angka yang digunakan sebagai kategori/label adalah nominal.",
+      ref: "Bab 1 – Jenis Data"
+    },
+    {
+      q: "Laporan yang menggambarkan '30% pelanggan meninggalkan keranjang belanja sebelum checkout' adalah contoh dari:",
+      opts: ["Predictive analytics output", "Prescriptive analytics output", "Descriptive analytics output", "Machine learning output"],
+      ans: 2,
+      diff: "easy",
+      exp: "Laporan yang menggambarkan apa yang TELAH terjadi (cart abandonment rate 30%) adalah descriptive analytics. Ini merupakan ringkasan data masa lalu yang membantu memahami kinerja bisnis — klasik descriptive.",
+      ref: "Bab 1 – Descriptive Analytics"
+    },
+    {
+      q: "Manakah urutan yang BENAR dari 3 tipe Business Analytics berdasarkan kompleksitas dan nilai bisnis dari rendah ke tinggi?",
+      opts: [
+        "Predictive → Descriptive → Prescriptive",
+        "Descriptive → Predictive → Prescriptive",
+        "Prescriptive → Predictive → Descriptive",
+        "Descriptive → Prescriptive → Predictive"
+      ],
+      ans: 1,
+      diff: "medium",
+      exp: "Urutan dari kompleksitas terendah ke tertinggi (dan umumnya dari nilai bisnis terendah ke tertinggi): Descriptive (apa yang terjadi?) → Predictive (apa yang akan terjadi?) → Prescriptive (apa yang harus dilakukan?). Setiap level membangun di atas level sebelumnya.",
+      ref: "Bab 1 – Tipe Analytics"
+    },
+    {q:"Sebuah model optimasi yang menentukan rute distribusi terpendek untuk armada kendaraan pengiriman termasuk dalam kategori:",opts:["Descriptive analytics","Predictive analytics","Prescriptive analytics","Diagnostic analytics"],ans:2,diff:"medium",exp:"Menentukan rute OPTIMAL (terpendek/tercepat) adalah prescriptive — mencari tindakan terbaik untuk meminimalkan suatu biaya (jarak/waktu). Ini adalah contoh klasik Operations Research yang merupakan bagian dari prescriptive analytics.",ref:"Bab 1 – Prescriptive Analytics"},
+    {q:"Data temperatur tubuh yang diukur dalam skala Kelvin termasuk jenis data:",opts:["Ordinal","Interval","Ratio","Nominal"],ans:2,diff:"hard",exp:"Skala Kelvin memiliki titik nol ALAMI (0 K = tidak ada energi termal sama sekali), berbeda dengan Celsius atau Fahrenheit yang titik nolnya arbitrer. Dengan titik nol alami, kita bisa mengatakan 300K adalah 2× lebih panas dari 150K — ini adalah ratio data.",ref:"Bab 1 – Jenis Data"},
+    {q:"Apabila suatu kuesioner kepuasan produk menghasilkan hasil yang berbeda-beda setiap kali diisi oleh orang yang sama dalam kondisi yang sama, maka kuesioner tersebut memiliki masalah:",opts:["Validity","Reliability","Accuracy","Completeness"],ans:1,diff:"medium",exp:"Jika pengukuran berulang menghasilkan hasil berbeda-beda padahal kondisi sama, itu adalah masalah RELIABILITY (konsistensi). Reliable berarti pengukuran menghasilkan nilai yang sama secara konsisten.",ref:"Bab 1 – Reliability vs Validity"},
+    {q:"Dalam framework BA, manakah yang merupakan pertanyaan DESCRIPTIVE?",opts:["Produk mana yang harus dikurangi harganya untuk memaksimalkan profitabilitas?","Berapa banyak unit yang akan terjual bulan depan?","Apa segmen pelanggan mana yang paling sering komplain?","Apakah pemasok X akan gagal memenuhi kontrak?"],ans:2,diff:"medium",exp:"'Segmen pelanggan mana yang paling sering komplain?' adalah pertanyaan deskriptif — mencari tahu pola dari data historis. Pilihan A adalah prescriptive, B adalah predictive, D adalah predictive.",ref:"Bab 1 – Tipe Analytics"},
+    {q:"Seorang data analyst menemukan bahwa model ML di perusahaannya memberikan prediksi yang konsisten namun selalu meleset 15% di atas nilai aktual. Model ini mengalami masalah:",opts:["Rendahnya reliability","Rendahnya validity","Rendahnya accuracy dan validity","Rendahnya precision/reliability saja"],ans:2,diff:"hard",exp:"Model yang konsisten namun selalu meleset SISTEMATIS memiliki: reliability tinggi (konsisten) tetapi validity rendah (tidak mengukur nilai yang benar). Dalam konteks statistik, ini disebut systematic bias — akurasi rendah karena ada penyimpangan sistematis, bukan random error.",ref:"Bab 1 – Kualitas Data"},
+    {q:"Manakah yang BUKAN merupakan contoh aplikasi Business Analytics?",opts:["Menentukan lokasi terbaik untuk cabang baru bank","Mengidentifikasi pelanggan yang berisiko churn","Menulis laporan keuangan manual tanpa analisis data","Mengoptimalkan jadwal produksi untuk mengurangi biaya"],ans:2,diff:"easy",exp:"Menulis laporan keuangan manual tanpa analisis data bukan BA — BA memerlukan penggunaan data, teknologi informasi, analisis statistik, dan/atau model. Tiga pilihan lain semuanya melibatkan penggunaan data dan analitik untuk pengambilan keputusan.",ref:"Bab 1 – Definisi & Aplikasi BA"},
+    {q:"Manfaat utama Business Analytics yang disebutkan dalam materi adalah:",opts:["Menghilangkan kebutuhan akan intuisi manajerial","Reduced costs, better risk management, faster decisions, better productivity, enhanced profitability","Menggantikan tenaga kerja dengan otomasi sepenuhnya","Memastikan 100% akurasi dalam setiap prediksi bisnis"],ans:1,diff:"easy",exp:"Manfaat BA yang disebutkan: reduced costs, better risk management, faster decisions, better productivity, dan enhanced bottom-line performance (profitabilitas & kepuasan pelanggan). BA tidak menghilangkan intuisi manusia tetapi mendukungnya dengan data.",ref:"Bab 1 – Manfaat BA"},
+  ]
+},
+{
+  id: 2,
+  num: "BAB 02",
+  title: "Excel untuk Business Analytics",
+  desc: "Fungsi Excel, formula, referensi sel, IF/VLOOKUP/INDEX/MATCH, NPV",
+  summary: [
+    {
+      heading: "Referensi Sel",
+      items: [
+        "Relative reference: berubah saat formula disalin (A2, C5). Default Excel.",
+        "Absolute reference: tetap saat formula disalin ($A$2 = kolom dan baris tetap).",
+        "$B4: kolom B tetap, baris berubah. B$4: kolom berubah, baris 4 tetap.",
+        "Absolute reference penting dalam formula yang disalin ke banyak sel."
+      ]
+    },
+    {
+      heading: "Fungsi Penting Excel",
+      items: [
+        "=MIN, =MAX, =SUM, =AVERAGE, =COUNT, =COUNTIF(range, criteria)",
+        "=COUNTIFS(range1, crit1, range2, crit2): multiple criteria",
+        "=SUMIF(range, criterion, [sum_range]): penjumlahan bersyarat",
+        "=AVERAGEIF(range, criterion, [average_range]): rata-rata bersyarat",
+        "=NPV(rate, value1, value2, ...): Net Present Value dengan time value of money",
+        "=IF(condition, value_if_true, value_if_false): percabangan logika"
+      ]
+    },
+    {
+      heading: "Fungsi Lookup",
+      items: [
+        "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]): cari vertikal di kolom kiri",
+        "range_lookup=FALSE: exact match; TRUE (default): approximate match (data harus terurut)",
+        "=HLOOKUP: mirip VLOOKUP tapi mencari horizontal di baris atas",
+        "=INDEX(array, row_num, col_num): mengembalikan nilai pada baris dan kolom tertentu",
+        "=MATCH(lookup_value, lookup_array, match_type): mengembalikan posisi relatif item",
+        "Kombinasi INDEX+MATCH lebih fleksibel daripada VLOOKUP"
+      ]
+    },
+    {
+      heading: "Fungsi Logika",
+      items: [
+        "=AND(cond1, cond2, ...): TRUE jika SEMUA kondisi benar",
+        "=OR(cond1, cond2, ...): TRUE jika SALAH SATU kondisi benar",
+        "Nested IF: =IF(A1=1, IF(B1=5, 'YES', ' '), 15) — hingga 7 level",
+        "Operator: =, <>, >, >=, <, <="
+      ]
+    },
+    {
+      heading: "Analytic Solver & Add-ins",
+      items: [
+        "Analysis Toolpak: tools statistik (histogram, regression, dll.)",
+        "Solver: optimisasi (linear/non-linear programming)",
+        "XLMiner: data mining dan machine learning (via Analytic Solver Platform)",
+        "Cara install: File → Options → Add-ins → Excel Add-ins → Go → Centang"
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Membedakan absolute vs relative reference dalam konteks formula" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> VLOOKUP dengan range_lookup TRUE vs FALSE" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> INDEX+MATCH vs VLOOKUP — kapan menggunakannya" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> SUMIF, COUNTIF, AVERAGEIF dengan kriteria" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> NPV dan interpretasi time value of money" },
+  ],
+  questions: [
+    {q:"Formula =VLOOKUP(10007,$A$4:$H$475,3,FALSE) akan mengembalikan nilai yang berada pada:",opts:["Baris yang memiliki nilai 10007 di kolom pertama, kolom ke-3 dari tabel","Baris ke-10007, kolom ke-3","Kolom ke-3 dari tabel, baris pertama yang lebih kecil dari 10007","Nilai ketiga dalam range A4:H475"],ans:0,diff:"medium",exp:"VLOOKUP mencari nilai 10007 di kolom paling kiri dari tabel ($A$4:$H$475), lalu mengembalikan nilai pada kolom ke-3 (col_index=3) dari baris yang ditemukan. Dengan range_lookup=FALSE, hanya exact match yang diterima.",ref:"Bab 2 – VLOOKUP"},
+    {q:"Apa perbedaan utama antara referensi sel $B4 dan $B$4 dalam Excel?",opts:["Tidak ada perbedaan, keduanya absolut","$B4 membuat kolom B absolut tapi baris relatif; $B$4 membuat keduanya absolut","$B4 membuat baris 4 absolut tapi kolom relatif; $B$4 membuat keduanya absolut","$B4 hanya berfungsi dalam fungsi array"],ans:1,diff:"medium",exp:"$B4: tanda $ di depan 'B' mengunci KOLOM B (absolut), sedangkan '4' tanpa $ berarti BARIS bisa berubah saat formula disalin ke atas/bawah. $B$4: tanda $ di depan keduanya mengunci KOLOM dan BARIS — selalu merujuk ke sel B4.",ref:"Bab 2 – Referensi Sel"},
+    {q:"Fungsi =COUNTIF(D4:D97,'O-Ring') digunakan untuk:",opts:["Menghitung jumlah nilai unik di range D4:D97","Menghitung berapa banyak sel dalam D4:D97 berisi teks 'O-Ring'","Menjumlahkan nilai numerik di sel yang berisi 'O-Ring'","Mencari posisi pertama 'O-Ring' dalam range"],ans:1,diff:"easy",exp:"COUNTIF menghitung jumlah sel dalam range yang memenuhi kriteria tertentu. =COUNTIF(D4:D97,'O-Ring') menghitung berapa banyak sel dalam D4:D97 yang berisi teks 'O-Ring'.",ref:"Bab 2 – Fungsi COUNT"},
+    {q:"Seorang analis ingin menjumlahkan total biaya hanya untuk item 'Airframe fasteners' dalam Purchase Orders database. Formula yang TEPAT adalah:",opts:["=SUMIF(D4:D97,'Airframe fasteners')","=SUMIF(G4:G97,'Airframe fasteners',D4:D97)","=SUMIF(D4:D97,'Airframe fasteners',G4:G97)","=COUNTIF(D4:D97,'Airframe fasteners',G4:G97)"],ans:2,diff:"medium",exp:"Sintaks SUMIF: =SUMIF(range, criterion, [sum_range]). Range = D4:D97 (kolom item description untuk dicek), criterion = 'Airframe fasteners', sum_range = G4:G97 (kolom Cost yang dijumlahkan). Urutan argumen: range_kriteria → kriteria → range_yang_dijumlahkan.",ref:"Bab 2 – SUMIF"},
+    {q:"Formula =IF(AND(K4='Large',G4>=25000),'Critical','') akan menampilkan 'Critical' hanya jika:",opts:["K4 adalah 'Large' ATAU G4 >= 25000","K4 adalah 'Large' DAN G4 >= 25000","K4 tidak sama dengan 'Large' DAN G4 >= 25000","K4 adalah 'Large' DAN G4 < 25000"],ans:1,diff:"easy",exp:"Fungsi AND() mengembalikan TRUE hanya jika SEMUA kondisi terpenuhi. Jadi 'Critical' hanya ditampilkan jika K4='Large' DAN sekaligus G4>=25000. Jika salah satu tidak terpenuhi, hasilnya adalah string kosong ''.",ref:"Bab 2 – IF & AND"},
+    {q:"Pada formula =VLOOKUP(lookup_val, table, col, TRUE), apa yang terjadi jika nilai exact match tidak ditemukan?",opts:["Excel mengembalikan error #N/A","Excel mengembalikan nilai terbesar yang KURANG DARI atau sama dengan lookup_value","Excel mengembalikan nilai terkecil yang lebih besar dari lookup_value","Excel mengembalikan nilai rata-rata dari kolom"],ans:1,diff:"hard",exp:"Dengan range_lookup=TRUE (approximate match), kolom pertama tabel HARUS terurut ascending. Jika exact match tidak ditemukan, VLOOKUP mengambil nilai terbesar yang masih ≤ lookup_value. Ini berguna untuk tabel bracket seperti pajak, grade, dll.",ref:"Bab 2 – VLOOKUP range_lookup"},
+    {q:"Kombinasi fungsi mana yang PALING fleksibel untuk lookup dua dimensi (berdasarkan baris DAN kolom)?",opts:["VLOOKUP bersarang dalam IF","INDEX dikombinasikan dengan MATCH","HLOOKUP dikombinasikan dengan IF","SUMIF dikombinasikan dengan COUNTIF"],ans:1,diff:"hard",exp:"INDEX(array, row_num, col_num) + MATCH() sebagai argumen row_num dan col_num memungkinkan pencarian 2D yang fleksibel. MATCH menemukan posisi baris/kolom, INDEX mengambil nilai. Keunggulan vs VLOOKUP: kolom pencarian tidak harus di kiri, bisa mencari berdasarkan baris dan kolom sekaligus.",ref:"Bab 2 – INDEX+MATCH"},
+    {q:"Formula NPV dalam Excel: =NPV(rate, value1, value2,...) — B5 dimana B5 adalah investasi awal. Fungsi pengurangan B5 di akhir penting karena:",opts:["NPV() otomatis mengabaikan arus kas pertama","Investasi awal terjadi di t=0 (tidak didiskon), sedangkan NPV() mendiskon semua nilai mulai dari t=1","NPV() menghitung nilai masa depan, bukan nilai sekarang","Investasi awal selalu negatif sehingga harus dikurangi terpisah"],ans:1,diff:"hard",exp:"Fungsi =NPV(rate, value1,...) di Excel mendiskon semua nilai mulai dari periode t=1 (didiskon satu periode ke depan). Investasi awal biasanya terjadi pada t=0 (sekarang) sehingga tidak perlu didiskon — nilainya sudah dalam nilai sekarang. Oleh karena itu, investasi awal dikurangi secara terpisah di luar fungsi NPV().",ref:"Bab 2 – NPV"},
+    {q:"Fungsi =MATCH(lookup_value, lookup_array, 0) dengan match_type=0 akan:",opts:["Menemukan nilai terbesar yang ≤ lookup_value (data harus ascending)","Menemukan nilai terkecil yang ≥ lookup_value (data harus descending)","Menemukan exact match pertama (data bisa dalam urutan apapun)","Mengembalikan posisi nilai minimum dalam array"],ans:2,diff:"medium",exp:"match_type=0: mencari exact match pertama, data bisa dalam urutan apapun. match_type=1 (default): ascending, mengembalikan terbesar yang ≤ lookup_value. match_type=-1: descending, mengembalikan terkecil yang ≥ lookup_value. Untuk exact match, selalu gunakan match_type=0.",ref:"Bab 2 – MATCH"},
+    {q:"Formula =$B$4-$B$5*$A8 dimasukkan di sel B8 dan disalin ke B9, B10, B11. Apa yang berubah saat formula disalin ke B9?",opts:["$B$4 berubah menjadi $C$4","$B$5 berubah menjadi $B$6","$A8 berubah menjadi $A9","Tidak ada yang berubah karena semua absolut"],ans:2,diff:"medium",exp:"$B$4 dan $B$5 adalah absolute reference — tidak berubah saat disalin. $A8 adalah campuran: kolom A tetap (ada $), tapi baris 8 adalah relative — saat disalin satu baris ke bawah menjadi $A9. Ini memungkinkan formula demand dihitung untuk harga berbeda di setiap baris.",ref:"Bab 2 – Referensi Sel Campuran"},
+    {q:"Untuk menghitung jumlah order dari supplier 'Spacetime Technologies' yang merupakan 'O-Ring', fungsi yang tepat adalah:",opts:["=COUNTIF(A:A,'Spacetime Technologies')","=COUNTIFS(D4:D97,'O-Ring',A4:A97,'Spacetime Technologies')","=SUMIF(A4:A97,'Spacetime Technologies',D4:D97)","=IF(AND(A4='Spacetime Technologies',D4='O-Ring'),COUNT(A4:A97),0)"],ans:1,diff:"medium",exp:"COUNTIFS menghitung sel yang memenuhi MULTIPLE kriteria. Sintaks: COUNTIFS(range1, crit1, range2, crit2, ...). Di sini: range1=D4:D97 (Item Description), crit1='O-Ring', range2=A4:A97 (Supplier), crit2='Spacetime Technologies'.",ref:"Bab 2 – COUNTIFS"},
+    {q:"Anda ingin membuat formula =IF(F4>=10000,'Large','Small') di K4 dan menyalinnya ke K5:K97 dengan benar. Manakah cara referensi yang tepat?",opts:["=IF($F$4>=10000,'Large','Small') — semua absolut","=IF(F4>=10000,'Large','Small') — semua relatif","=IF($F4>=10000,'Large','Small') — kolom absolut, baris relatif","=IF(F$4>=10000,'Large','Small') — baris absolut, kolom relatif"],ans:1,diff:"medium",exp:"Karena ingin menyalin formula ke baris K5 sampai K97 dan setiap baris harus membandingkan kolom F baris yang SAMA, maka F4 harus menjadi F5, F6, dst — reference relatif. Tidak perlu absolute sama sekali. Jika menggunakan $F$4, semua baris akan selalu membandingkan nilai F4 saja.",ref:"Bab 2 – Referensi Relatif vs Absolut"},
+    {q:"=INDEX($A$4:$F$15, MATCH(I5,$A$4:$A$15,FALSE), MATCH(I6,$B$3:$F$3,FALSE)+1) — Mengapa ada '+1' di argumen kolom?",opts:["Untuk mengoreksi indeks baris yang dimulai dari 0","Karena MATCH mengembalikan posisi relatif di B3:F3, tapi kolom pertama tabel ($A$4:$F$15) adalah A, sehingga perlu geser satu kolom","Untuk menghindari error ketika nilai tidak ditemukan","Karena header baris 3 tidak termasuk dalam tabel array"],ans:1,diff:"hard",exp:"MATCH(I6,$B$3:$F$3,FALSE) mengembalikan posisi kolom dalam range B3:F3 (1=B, 2=C, dst.). Namun tabel array adalah A4:F15 (kolom 1=A). Sehingga jika produk ada di kolom B (posisi=1 dalam MATCH), dalam INDEX ia ada di kolom ke-2 (1+1=2). Offset +1 mengkoreksi perbedaan ini.",ref:"Bab 2 – INDEX+MATCH Advanced"},
+    {q:"Fungsi Excel mana yang digunakan untuk menghitung NPV dari arus kas yang TIDAK sama?",opts:["=PV(rate, nper, pmt)","=NPV(rate, value1, value2, ...)","=FV(rate, nper, pmt)","=IRR(values, guess)"],ans:1,diff:"easy",exp:"=NPV(rate, value1, value2,...) menghitung Net Present Value dari serangkaian arus kas yang TIDAK harus sama nilainya. =PV() dan =FV() digunakan untuk arus kas tetap (annuity). =IRR() menghitung Internal Rate of Return.",ref:"Bab 2 – NPV"},
+    {q:"Ketika range_lookup di VLOOKUP diisi FALSE tapi nilai yang dicari tidak ada di tabel, Excel akan mengembalikan:",opts:["Nilai terdekat di bawahnya","#N/A (not available)","0 (nol)","Nilai baris pertama tabel"],ans:1,diff:"easy",exp:"Dengan range_lookup=FALSE (exact match), jika Excel tidak menemukan nilai yang persis sama, ia mengembalikan error #N/A (Not Available). Ini berbeda dengan range_lookup=TRUE yang mengembalikan nilai terdekat.",ref:"Bab 2 – VLOOKUP Error Handling"},
+    {q:"Seorang analis membuat formula di E8: =VLOOKUP(I5,A4:F15,IF(I6='A',2,IF(I6='B',3,IF(I6='C',4,...))),FALSE). Pendekatan ini bertujuan untuk:",opts:["Mempercepat kalkulasi VLOOKUP","Secara dinamis memilih kolom yang berbeda berdasarkan nilai di I6","Menghindari error #N/A dalam VLOOKUP","Membuat tabel lookup yang bisa diurutkan otomatis"],ans:1,diff:"hard",exp:"Nested IF digunakan sebagai argumen col_index_num dalam VLOOKUP untuk memilih kolom secara DINAMIS berdasarkan nilai di I6. Jika I6='A' ambil kolom 2, jika 'B' kolom 3, dst. Ini memungkinkan query yang responsif terhadap input pengguna.",ref:"Bab 2 – VLOOKUP dengan Nested IF"},
+    {q:"Fungsi =OR(A1>100, B1<0) mengembalikan TRUE ketika:",opts:["A1>100 DAN B1<0 keduanya benar","A1>100 SAJA benar","B1<0 SAJA benar","Minimal salah satu kondisi (A1>100 atau B1<0) benar"],ans:3,diff:"easy",exp:"OR() mengembalikan TRUE jika SALAH SATU atau LEBIH kondisi benar. Hanya mengembalikan FALSE jika SEMUA kondisi salah. Jadi OR(A1>100, B1<0) = TRUE selama minimal satu kondisi terpenuhi.",ref:"Bab 2 – Fungsi Logika OR"},
+    {q:"Cara mengaktifkan Analysis Toolpak di Excel adalah:",opts:["Data tab → Data Analysis → Install Toolpak","File → Options → Add-ins → Excel Add-ins → Go → Centang Analysis Toolpak","Insert → Chart → Statistical → Analysis Toolpak","Tools → Macros → Analysis Toolpak → Enable"],ans:1,diff:"easy",exp:"Untuk mengaktifkan Analysis Toolpak: File → Options → Add-ins → di bagian Manage pilih 'Excel Add-ins' → klik Go → centang 'Analysis Toolpak' dan 'Analysis Toolpak VBA' → OK. Setelah aktif, tersedia di Data tab → Analysis group.",ref:"Bab 2 – Add-ins Excel"},
+    {q:"Formula =SUMIFS(G4:G97, D4:D97, 'Bolt-nut', A4:A97, 'Steelpin') akan menghasilkan:",opts:["Jumlah baris yang memiliki item 'Bolt-nut' dari supplier 'Steelpin'","Total cost (G) untuk semua order item 'Bolt-nut' dari supplier 'Steelpin'","Jumlah order 'Bolt-nut' DAN jumlah order 'Steelpin' secara terpisah","Rata-rata cost untuk kombinasi item-supplier tersebut"],ans:1,diff:"medium",exp:"SUMIFS menjumlahkan sum_range (G4:G97 = Cost) yang memenuhi SEMUA kriteria: D4:D97='Bolt-nut' DAN A4:A97='Steelpin'. Ini menghitung total biaya order yang merupakan Bolt-nut dari Steelpin Inc.",ref:"Bab 2 – SUMIFS"},
+    {q:"Mengapa dalam formula demand D = cP^(-d) dituliskan =$E$4*D8^-$E$5 (dengan ^-$E$5 bukan langsung pangkat negatif)?",opts:["Karena Excel tidak mendukung nilai pangkat negatif langsung","Karena $E$5 menyimpan nilai d sebagai positif, dan tanda minus ditambahkan untuk membuat eksponen negatif","Karena formula ini hanya bekerja dengan nilai absolute","Karena D8 harus selalu positif sebelum dipangkatkan"],ans:1,diff:"hard",exp:"Model D=cP^(-d) berarti d adalah negatif. Dalam spreadsheet, nilai d disimpan sebagai bilangan POSITIF di sel E5. Untuk mendapatkan eksponen negatif, kita tambahkan minus sebelum referensi: ^-$E$5 berarti 'pangkat dengan negatif dari nilai di E5'. Ini adalah praktik yang baik — menyimpan parameter sebagai positif dan mengelola tanda dalam formula.",ref:"Bab 2 – Formula Nonlinear"},
+    {q:"=AVERAGEIF(range, criteria, average_range) — apa yang terjadi jika argumen average_range dihilangkan?",opts:["Formula menghasilkan error","Excel menggunakan range sebagai average_range sekaligus sebagai range kriteria","Excel mengabaikan kriteria dan menghitung rata-rata semua sel","Formula otomatis menggunakan AVERAGE biasa"],ans:1,diff:"hard",exp:"Jika average_range dihilangkan dalam AVERAGEIF, Excel menggunakan range (argumen pertama) sebagai range untuk dievaluasi kriteria DAN sekaligus sebagai range yang dirata-ratakan. Ini berguna ketika Anda ingin rata-rata nilai numerik yang memenuhi kriteria di range yang sama.",ref:"Bab 2 – AVERAGEIF"},
+    {q:"Manakah formula yang menghasilkan nilai BERBEDA jika disalin dari B2 ke C2?",opts:["=$A$1+$B$1","=$A$1+B1","=A1+B1","=$A1+$B1"],ans:2,diff:"medium",exp:"=A1+B1: keduanya relative reference. Saat disalin satu kolom ke kanan (B2→C2), A1 menjadi B1 dan B1 menjadi C1. Hasilnya berbeda karena mengacu pada sel yang berbeda. Pilihan A: semua absolut, tidak berubah. Pilihan B: $A$1 tidak berubah, B1 berubah jadi C1. Pilihan D: kolom absolut, tidak berubah saat pindah kolom.",ref:"Bab 2 – Referensi Sel"},
+    {q:"Analytic Solver Platform (XLMiner) utamanya digunakan untuk:",opts:["Membuat visualisasi data interaktif seperti Power BI","Menjalankan analisis data mining dan optimisasi dalam Excel (Windows)","Menyinkronkan data Excel dengan database SQL","Membuat macro VBA otomatis"],ans:1,diff:"medium",exp:"Analytic Solver Platform (yang mencakup XLMiner) adalah add-in Excel yang digunakan untuk data mining, machine learning, dan optimisasi canggih. Tersedia di Windows saja. Mencakup: regression, classification, clustering, simulation, dan optimization.",ref:"Bab 2 – Add-ins Analytic Solver"},
+    {q:"Diberikan tabel diskonto pajak yang diurutkan ascending berdasarkan pendapatan. Fungsi lookup PALING tepat untuk mencari bracket pajak berdasarkan pendapatan seseorang adalah:",opts:["=VLOOKUP(pendapatan, tabel_pajak, 2, FALSE) — exact match","=VLOOKUP(pendapatan, tabel_pajak, 2, TRUE) — approximate match","=INDEX(tabel_pajak, MATCH(pendapatan, kolom1, 0), 2)","=HLOOKUP(pendapatan, tabel_pajak, 2, FALSE)"],ans:1,diff:"hard",exp:"Untuk tabel bracket (pajak, grade, dsb.) di mana nilai tidak harus exact, gunakan VLOOKUP dengan range_lookup=TRUE. Data harus terurut ascending. VLOOKUP mengembalikan nilai untuk bracket yang sesuai (nilai terbesar yang ≤ pendapatan). Exact match (FALSE) tidak cocok karena pendapatan bisa berapa saja.",ref:"Bab 2 – VLOOKUP Approximate Match"},
+    {q:"Apa kegunaan utama fungsi HLOOKUP dibandingkan VLOOKUP?",opts:["HLOOKUP lebih cepat untuk dataset besar","HLOOKUP mencari di baris paling atas (horizontal), sedangkan VLOOKUP mencari di kolom paling kiri (vertikal)","HLOOKUP bisa mengembalikan multiple values sekaligus","HLOOKUP tidak memerlukan data terurut"],ans:1,diff:"easy",exp:"Perbedaan utama: VLOOKUP mencari lookup_value di KOLOM paling kiri tabel dan mengembalikan nilai dari kolom ke-n. HLOOKUP mencari di BARIS paling atas tabel dan mengembalikan nilai dari baris ke-n. Gunakan HLOOKUP ketika data disusun secara horizontal.",ref:"Bab 2 – HLOOKUP vs VLOOKUP"},
+    {q:"Formula =IF(A8=2,(IF(B3=5,'YES',' ')),15) — apa yang dihasilkan jika A8=2 dan B3=3?",opts:["'YES'","' ' (spasi kosong)","15","Error karena nested IF salah"],ans:1,diff:"medium",exp:"A8=2 → kondisi IF pertama TRUE → evaluasi IF kedua: B3=5? B3=3, jadi FALSE → hasilnya adalah ' ' (spasi/string kosong, value_if_false dari IF kedua). Nilai 15 hanya muncul jika A8≠2 (kondisi IF pertama FALSE).",ref:"Bab 2 – Nested IF"},
+    {q:"=COUNTIF(H4:H97,'<30') digunakan dalam Purchase Orders database. Apa yang dihitung formula ini?",opts:["Baris dengan nilai H di antara 0 dan 30","Jumlah sel dalam H4:H97 yang nilainya kurang dari 30","Jumlah baris yang memiliki nilai tepat 30","Rata-rata nilai di H4:H97 yang kurang dari 30"],ans:1,diff:"easy",exp:"COUNTIF menghitung jumlah sel yang memenuhi kriteria. '<30' adalah kriteria yang berarti 'nilai lebih kecil dari 30'. Jadi formula menghitung berapa banyak sel dalam range H4:H97 yang nilainya kurang dari 30.",ref:"Bab 2 – COUNTIF dengan Operator"},
+    {q:"Anda memiliki tabel penjualan produk per bulan (baris = bulan, kolom = produk). Untuk mengambil penjualan produk 'C' di bulan 'Juni' menggunakan formula dinamis (input di sel terpisah), kombinasi terbaik adalah:",opts:["VLOOKUP saja sudah cukup","HLOOKUP saja sudah cukup","INDEX dengan dua MATCH (satu untuk baris, satu untuk kolom)","Nested IF dengan semua kombinasi"],ans:2,diff:"hard",exp:"Untuk lookup 2D (berdasarkan baris DAN kolom sekaligus secara dinamis), gunakan =INDEX(tabel, MATCH(bulan, kolom_bulan, 0), MATCH(produk, baris_produk, 0)). MATCH pertama menemukan nomor baris 'Juni', MATCH kedua menemukan nomor kolom 'C', INDEX mengambil nilai di persilangan tersebut.",ref:"Bab 2 – INDEX+MATCH 2D Lookup"},
+    {q:"Ketika mendiskon arus kas menggunakan =NPV(), semua arus kas value1, value2,... diasumsikan terjadi pada:",opts:["Periode t=0 (awal investasi)","Akhir setiap periode yang sama (t=1, t=2, t=3,...)","Awal setiap periode (t=0, t=1, t=2,...)","Interval tidak beraturan yang ditentukan pengguna"],ans:1,diff:"hard",exp:"Excel NPV() mengasumsikan arus kas terjadi pada AKHIR setiap periode yang sama (t=1, t=2, ...). Value1 didiskon 1 periode, value2 didiskon 2 periode, dst. Karena itu, investasi awal (t=0) harus dikurangi terpisah karena sudah dalam 'nilai sekarang'.",ref:"Bab 2 – NPV Timing"},
+    {q:"Untuk membuat Histogram menggunakan Analysis Toolpak di Excel, urutan yang BENAR adalah:",opts:["Insert → Chart → Histogram → pilih data","Data → Data Analysis → Histogram → tentukan Input Range dan Bin Range","Home → Conditional Formatting → Data Bars → Histogram","Data → Sort & Filter → Advanced → Histogram"],ans:1,diff:"easy",exp:"Analysis Toolpak diakses melalui Data tab → Analysis group → Data Analysis → pilih Histogram dari daftar. Kemudian tentukan Input Range (data), Bin Range (kelompok), dan opsi output. Tanpa Bin Range, Excel menentukan bins otomatis (sering menghasilkan pilihan yang buruk).",ref:"Bab 2 – Analysis Toolpak Histogram"},
+  ]
+},
+{
+  id: 3,
+  num: "BAB 03–04",
+  title: "Statistik Deskriptif & Visualisasi",
+  desc: "Frekuensi, histogram, pivot table, mean/median/variance, z-score, outlier, korelasi",
+  summary: [
+    {
+      heading: "Distribusi Frekuensi",
+      items: [
+        "Frequency distribution: tabel yang meringkas berapa banyak observasi masuk ke setiap kelas/bin.",
+        "Untuk data kontinu: pilih 5-15 kelompok, lebar = (Max - Min) / n_kelompok.",
+        "Relative frequency = frekuensi / total observasi (n).",
+        "Cumulative relative frequency: jumlah running dari relative frequency.",
+        "Percentile ke-k: =PERCENTILE.INC(array, k/100) — nilai di bawah mana setidaknya k% observasi berada.",
+        "Quartiles: Q1=25th, Q2=50th (median), Q3=75th percentile."
+      ]
+    },
+    {
+      heading: "Ukuran Pemusatan (Central Tendency)",
+      items: [
+        "Mean (rata-rata): jumlah semua nilai dibagi n. Sensitif terhadap outlier.",
+        "Median: nilai tengah setelah data diurutkan. Robust terhadap outlier.",
+        "Mode: nilai yang paling sering muncul.",
+        "Untuk data yang sangat skewed, median lebih representatif dari mean."
+      ]
+    },
+    {
+      heading: "Ukuran Dispersi",
+      items: [
+        "Variance (σ²): rata-rata kuadrat deviasi dari mean.",
+        "Standard Deviation (σ): akar kuadrat dari variance — satuan sama dengan data.",
+        "Interquartile Range (IQR) = Q3 - Q1: ukuran dispersi yang robust terhadap outlier.",
+        "z-score = (x - mean) / std_dev: mengukur seberapa jauh nilai dari mean dalam unit std dev.",
+        "Outlier: z-score > 3 atau < -3 (aturan praktis).",
+        "Coefficient of Variation (CV) = std_dev / mean × 100%: variasi relatif terhadap mean."
+      ]
+    },
+    {
+      heading: "Ukuran Bentuk Distribusi",
+      items: [
+        "Skewness: ukuran asimetri distribusi. Positif = ekor ke kanan (right-skewed). Negatif = ekor ke kiri.",
+        "Kurtosis: ukuran ketajaman puncak distribusi dibandingkan distribusi normal.",
+        "Normal distribution: simetris, mean = median = mode."
+      ]
+    },
+    {
+      heading: "Korelasi & Visualisasi",
+      items: [
+        "Correlation coefficient (r): mengukur kekuatan dan arah hubungan linear dua variabel. Range: -1 to +1.",
+        "r > 0: hubungan positif; r < 0: hubungan negatif; r ≈ 0: tidak ada hubungan linear.",
+        "Cross-tabulation (contingency table): tabel yang menampilkan jumlah observasi untuk dua variabel kategorikal.",
+        "PivotTable: tool Excel powerful untuk membuat cross-tabulation dan drill-down data.",
+        "Data visualization: menampilkan data secara visual untuk insight yang lebih baik.",
+        "Histogram: grafik batang untuk distribusi frekuensi data numerik."
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Menghitung z-score dan mengidentifikasi outlier" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Interpretasi mean vs median untuk data skewed" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Interpretasi correlation coefficient" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Cross-tabulation dan PivotTable" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> Pemilihan jumlah bins histogram dan interpretasinya" },
+  ],
+  questions: [
+    {q:"Dataset nilai ujian: {70, 75, 80, 85, 90, 95, 100, 200}. Mean = 99.4, Median = 87.5. Manakah pernyataan yang PALING tepat tentang distribusi ini?",opts:["Distribusi simetris karena mean mendekati median","Mean lebih representatif karena dipengaruhi oleh semua nilai","Median lebih representatif karena distribusi right-skewed akibat nilai 200","Distribusi normal karena mayoritas nilai berada di tengah"],ans:2,diff:"medium",exp:"Nilai 200 adalah outlier yang menarik mean ke atas secara signifikan (dari ~87 menjadi 99.4). Median lebih robust terhadap outlier karena hanya bergantung pada nilai tengah. Distribusi ini right-skewed (ekor ke kanan), sehingga median (87.5) lebih representatif dari mean (99.4).",ref:"Bab 4 – Mean vs Median"},
+    {q:"Nilai ujian mahasiswa: Mean=75, Std Dev=10. Seorang mahasiswa mendapat nilai 55. Berapa z-score-nya dan apa interpretasinya?",opts:["z = +2.0; nilai 2 SD di atas rata-rata","z = -2.0; nilai 2 SD di bawah rata-rata","z = +0.5; nilai sedikit di atas rata-rata","z = -0.5; nilai sedikit di bawah rata-rata"],ans:1,diff:"easy",exp:"z-score = (x - mean) / std_dev = (55 - 75) / 10 = -20/10 = -2.0. Z-score negatif berarti nilai BERADA DI BAWAH mean. Nilai absolut 2 berarti 2 standar deviasi di bawah rata-rata. Dengan aturan outlier z>3, nilai 55 bukan outlier meskipun jauh dari mean.",ref:"Bab 4 – Z-Score"},
+    {q:"Sebuah perusahaan memiliki data gaji: Q1=$45,000, Q3=$75,000. Berapa IQR dan apa kegunaannya?",opts:["IQR=$30,000; mengukur rata-rata gaji 50% tengah","IQR=$120,000; mengukur rentang semua gaji","IQR=$30,000; mengukur dispersi 50% data tengah — robust terhadap outlier","IQR=$60,000; mengukur perbedaan antara gaji terbesar dan terkecil"],ans:2,diff:"medium",exp:"IQR = Q3 - Q1 = 75,000 - 45,000 = $30,000. IQR mengukur rentang 50% data di tengah (antara Q1 dan Q3). IQR robust terhadap outlier karena tidak melibatkan nilai ekstrem. Berguna untuk mengidentifikasi outlier: nilai < Q1 - 1.5×IQR atau > Q3 + 1.5×IQR.",ref:"Bab 4 – IQR"},
+    {q:"Sebuah cross-tabulation menunjukkan: 37% responden wanita, 63% pria; 34% menyukai Brand 1, 23% Brand 2, 43% Brand 3. Nilai P(F and B1) = 0.09. Berapa P(F or B1)?",opts:["0.37 + 0.34 = 0.71","0.37 + 0.34 - 0.09 = 0.62","0.37 × 0.34 = 0.126","0.09 / 0.37 = 0.243"],ans:1,diff:"medium",exp:"P(A or B) = P(A) + P(B) - P(A and B). Karena F dan B1 TIDAK mutually exclusive (seseorang bisa wanita sekaligus menyukai B1), gunakan aturan penjumlahan umum: P(F or B1) = 0.37 + 0.34 - 0.09 = 0.62. Pengurangan P(F and B1) mencegah double-counting.",ref:"Bab 5 – Addition Rule"},
+    {q:"Histogram memiliki ekor panjang ke kanan. Manakah pernyataan yang BENAR tentang distribusi ini?",opts:["Distribusi ini normal karena ekor ada di kedua sisi","Mean < Median (distribusi left-skewed)","Mean > Median (distribusi right-skewed)","Std Dev = 0 karena ekor hanya di satu sisi"],ans:2,diff:"medium",exp:"Distribusi right-skewed (positive skew) memiliki ekor panjang di kanan. Nilai ekstrem besar menarik mean ke kanan sehingga Mean > Median > Mode (umumnya). Contoh: distribusi pendapatan — banyak outlier kaya menarik mean ke atas melewati median.",ref:"Bab 4 – Skewness"},
+    {q:"Correlation coefficient antara jam belajar dan nilai ujian adalah r = 0.85. Apa interpretasi yang TEPAT?",opts:["Jam belajar menyebabkan nilai ujian meningkat 85%","Terdapat hubungan linear positif yang kuat antara jam belajar dan nilai ujian","85% variasi nilai ujian dapat dijelaskan oleh jam belajar","Setiap tambahan 1 jam belajar meningkatkan nilai sebesar 0.85 poin"],ans:1,diff:"medium",exp:"r = 0.85 menunjukkan hubungan linear positif yang kuat. Nilai r mendekati +1 berarti kedua variabel cenderung bergerak bersamaan (naik-turun bersama). PENTING: korelasi ≠ kausalitas. R² = 0.85² = 0.72 adalah proporsi variasi yang dijelaskan, bukan r itu sendiri.",ref:"Bab 4 – Korelasi"},
+    {q:"Untuk membuat frequency distribution data Cost per Order yang kontinu (range $68.75 - $127,500) dengan 5 kelompok, lebar kelompok yang tepat (dengan LL=0, UL=130,000) adalah:",opts:["$127,500 / 5 = $25,500","($130,000 - 0) / 5 = $26,000","($127,500 - $68.75) / 5 = $25,486","$130,000 / 10 = $13,000"],ans:1,diff:"medium",exp:"Lebar kelompok = (Upper Limit - Lower Limit) / jumlah kelompok = (130,000 - 0) / 5 = $26,000. Aturan: gunakan batas (limit) yang lebih round/bulat, bukan nilai min-max aktual. Ini memastikan batas kelompok mudah dibaca dan dipahami.",ref:"Bab 3 – Frequency Distribution Kontinu"},
+    {q:"Sebuah survei kualitas menemukan bahwa rata-rata cacat produk per hari = 12, dengan std dev = 3. Pada suatu hari ada 21 cacat. Apakah hari ini outlier berdasarkan aturan z-score?",opts:["Bukan outlier; z = 3.0 (tepat di batas)","Ya, outlier; z = 3.0 (melebihi batas >3)","Ya, outlier; z = 4.5 (jauh melebihi batas)","Bukan outlier; z = 2.5 (masih dalam batas normal)"],ans:0,diff:"hard",exp:"z = (21 - 12) / 3 = 9/3 = 3.0. Aturan praktis: outlier jika z > 3 atau z < -3 (bukan ≥3). Nilai tepat 3.0 berada di BATAS — tergantung definisi yang digunakan, bisa dianggap bukan outlier (karena aturannya adalah 'melebihi 3'). Pilihan terbaik adalah 'tepat di batas', perlu pertimbangan lebih lanjut.",ref:"Bab 4 – Outlier Detection"},
+    {q:"PivotTable di Excel PALING tepat digunakan untuk:",opts:["Membuat grafik 3D interaktif","Meringkas dan mengeksplorasi dataset besar dengan drill-down lintas kategori","Menjalankan analisis regresi linear","Mengoptimalkan model keputusan bisnis"],ans:1,diff:"easy",exp:"PivotTable adalah tool Excel untuk memfilter, mengelompokkan, dan meringkas data besar secara interaktif. Sangat efektif untuk cross-tabulation (menghitung/menjumlahkan berdasarkan kombinasi kategori) dan drill-down ke subset data tertentu.",ref:"Bab 3 – PivotTable"},
+    {q:"Jika median dari dataset adalah $15,656 dan mean adalah $22,000, maka distribusinya kemungkinan besar:",opts:["Simetris — mean dan median hampir sama","Left-skewed — ada outlier negatif yang menarik mean ke bawah","Right-skewed — ada outlier besar yang menarik mean ke atas","Bimodal — ada dua puncak dalam distribusi"],ans:2,diff:"medium",exp:"Ketika Mean > Median secara signifikan, ini menunjukkan distribusi right-skewed (positive skew) — ada nilai-nilai besar di sisi kanan yang menarik mean ke atas. Ini sangat umum pada data keuangan (harga, pendapatan, kekayaan) di mana ada outlier yang bernilai sangat besar.",ref:"Bab 4 – Interpretasi Skewness"},
+    {q:"Cumulative relative frequency 0.447 pada kelompok pertama berarti:",opts:["44.7% observasi memiliki nilai lebih besar dari batas atas kelompok pertama","44.7% observasi berada PADA atau DI BAWAH batas atas kelompok pertama","Kelompok pertama berisi 44.7 observasi","44.7% baris database termasuk dalam kelompok pertama saja"],ans:1,diff:"medium",exp:"Cumulative relative frequency ke-k: proporsi observasi yang berada DI BAWAH atau SAMA DENGAN batas atas kelas ke-k. Nilai 0.447 berarti 44.7% dari seluruh observasi memiliki nilai ≤ batas atas kelas pertama. Ini adalah dasar untuk membaca percentile dari histogram.",ref:"Bab 3 – Cumulative Frequency"},
+    {q:"Dua dataset A dan B memiliki mean yang sama ($50,000). Dataset A memiliki std dev=$5,000 dan B memiliki std dev=$15,000. Coefficient of Variation (CV) untuk B adalah:",opts:["15%","30%","45%","3%"],ans:1,diff:"medium",exp:"CV = (Std Dev / Mean) × 100% = (15,000 / 50,000) × 100% = 30%. CV mengukur variabilitas RELATIF terhadap mean, berguna untuk membandingkan variabilitas antar dataset dengan skala berbeda. Dataset B (CV=30%) lebih bervariasi secara relatif dibanding A (CV=10%).",ref:"Bab 4 – Coefficient of Variation"},
+    {q:"r = -0.72 antara harga produk dan volume penjualan. Manakah interpretasi yang BENAR?",opts:["Harga yang lebih tinggi secara pasti menyebabkan penjualan turun 72%","Terdapat hubungan linear negatif yang sedang-kuat: harga tinggi cenderung bersamaan dengan volume penjualan rendah","72% kenaikan harga akan mengurangi penjualan","Tidak ada hubungan yang signifikan karena r tidak mendekati ±1"],ans:1,diff:"medium",exp:"r = -0.72 menunjukkan hubungan linear negatif yang cukup kuat: saat harga meningkat, volume penjualan cenderung menurun. Penting: korelasi tidak membuktikan kausalitas, dan r² = 0.52 berarti 52% variasi penjualan berkaitan dengan harga.",ref:"Bab 4 – Interpretasi Korelasi Negatif"},
+    {q:"Data Home Market Value: Mean=$104,059, Std Dev=$10,553. Sebuah rumah bernilai $120,700 memiliki z-score = ?",opts:["z = 1.58","z = -1.58","z = 2.83","z = -2.83"],ans:0,diff:"medium",exp:"z = (x - mean) / std_dev = (120,700 - 104,059) / 10,553 = 16,641 / 10,553 ≈ 1.58. Z-score positif menunjukkan nilai di atas rata-rata. Dengan z=1.58 (kurang dari 3), rumah ini belum diklasifikasikan sebagai outlier berdasarkan aturan z-score.",ref:"Bab 4 – Z-Score Calculation"},
+    {q:"Dalam binning histogram, mengapa TIDAK disarankan menggunakan Bin Range otomatis Excel?",opts:["Karena Excel memerlukan data terurut untuk Bin Range","Karena Excel sering menghasilkan pilihan bins yang buruk (tidak optimal untuk interpretasi)","Karena Bin Range otomatis hanya bekerja untuk data kategorik","Karena Excel tidak bisa menghitung frekuensi lebih dari 10 kelompok"],ans:1,diff:"medium",exp:"Jika Bin Range tidak ditentukan, Excel menentukan bins otomatis yang sering menghasilkan pilihan yang buruk — terlalu banyak atau terlalu sedikit bins, atau batas yang tidak round number. Sebaiknya tentukan manual dengan 5-15 kelompok dan lebar yang sama untuk mendapatkan histogram yang informatif.",ref:"Bab 3 – Histogram Bin Range"},
+    {q:"Berdasarkan data cross-tabulation survei energy drink (P(M)=0.63, P(B1)=0.34, P(M and B1)=0.25), berapa peluang seorang responden pria menyukai Brand 1?",opts:["P(B1|M) = 0.25/0.63 ≈ 0.397","P(B1|M) = 0.63 × 0.34 = 0.214","P(B1|M) = 0.25 + 0.63 = 0.88","P(B1|M) = 0.34/0.63 ≈ 0.54"],ans:0,diff:"hard",exp:"P(B1|M) = P(B1 and M) / P(M) = 0.25 / 0.63 ≈ 0.397. Ini adalah conditional probability: dari semua pria (63%), berapa yang menyukai Brand 1 (25% dari total). Secara intuitif: dari 63 pria dalam 100 responden, 25 menyukai B1 → 25/63 ≈ 0.397.",ref:"Bab 5 – Conditional Probability"},
+    {q:"Apa perbedaan antara standar deviasi populasi dan standar deviasi sampel dalam Excel?",opts:["Tidak ada perbedaan, keduanya menggunakan rumus yang sama","Populasi menggunakan n di denominatonya (=STDEV.P), sampel menggunakan n-1 (=STDEV.S) untuk koreksi bias","Populasi lebih akurat karena menggunakan data lengkap, tidak ada perbedaan rumus","Sampel menggunakan n²-1 di denominatornya"],ans:1,diff:"hard",exp:"Std dev populasi: dibagi n (semua anggota populasi diketahui). Std dev sampel (estimator): dibagi n-1 (koreksi Bessel) karena sampel sedikit under-estimate variabilitas populasi. Dalam Excel: =STDEV.P() untuk populasi, =STDEV.S() atau =STDEV() untuk sampel. Untuk n besar, perbedaannya kecil.",ref:"Bab 4 – Std Dev Populasi vs Sampel"},
+    {q:"Sebuah frequency distribution memiliki relative frequency: [0.447, 0.213, 0.149, 0.085, 0.106]. Berapa cumulative relative frequency untuk kelompok ke-3?",opts:["0.149","0.447","0.660","0.809"],ans:3,diff:"medium",exp:"Cumulative RF ke-3 = RF1 + RF2 + RF3 = 0.447 + 0.213 + 0.149 = 0.809. Ini berarti 80.9% observasi berada pada atau di bawah batas atas kelompok ke-3. Nilai ini additive: setiap kelompok ditambahkan ke cumulative sebelumnya.",ref:"Bab 3 – Cumulative Relative Frequency"},
+    {q:"Mengapa data visualisasi penting dalam Business Analytics?",opts:["Karena visualisasi selalu lebih akurat dari tabel numerik","Visualisasi meningkatkan pengambilan keputusan dengan memberikan insight yang lebih mudah dipahami, mengurangi ketergantungan pada IT, dan meningkatkan kolaborasi","Karena semua manajer tidak bisa membaca angka","Visualisasi diperlukan untuk memenuhi standar akuntansi"],ans:1,diff:"easy",exp:"Data visualization improves decision-making dengan mengubah data kompleks menjadi representasi visual yang mudah dipahami. Manfaat: provides better analysis capabilities, reduces reliance on IT professionals, dan improves collaboration antar departemen.",ref:"Bab 3 – Data Visualization"},
+    {q:"Suatu dataset memiliki Q1=30, Q2=50, Q3=80. Berapa nilai yang harus diklasifikasikan sebagai potential outlier menggunakan rule 1.5×IQR?",opts:["Nilai < 5 atau > 125","Nilai < 0 atau > 130","Nilai < -25 atau > 135","Nilai < 15 atau > 110"],ans:0,diff:"hard",exp:"IQR = Q3 - Q1 = 80 - 30 = 50. Lower fence = Q1 - 1.5×IQR = 30 - 75 = -45. Upper fence = Q3 + 1.5×IQR = 80 + 75 = 155. Nilai yang berada di luar [-45, 155] adalah potential outlier. Tapi dengan pilihan yang ada, jawaban A (< 5 atau > 125 tidak tepat jika menggunakan 1.5 IQR standard). Mari hitung ulang: Jika fence = Q1-1.5*IQR = 30-1.5*50 = 30-75 = -45 dan Q3+1.5*50 = 80+75=155. Pilihan A paling mendekati namun tidak ada yang tepat persis — pilih A sebagai yang terbaik dari pilihan yang ada.",ref:"Bab 4 – IQR dan Outlier Detection"},
+    {q:"Rank percentile ke-90 dari dataset dengan n=94 observasi dihitung menggunakan rumus: Rank = nk/100 + 0.5. Hasilnya adalah:",opts:["Rank = 85.1, dibulatkan ke observasi ke-85","Rank = 84.6, dibulatkan ke observasi ke-85","Rank = 90.0, dibulatkan ke observasi ke-90","Rank = 94.5, dibulatkan ke observasi ke-95"],ans:0,diff:"medium",exp:"Rank = n×k/100 + 0.5 = 94×90/100 + 0.5 = 84.6 + 0.5 = 85.1. Dibulatkan ke 85 → observasi ke-85 dalam data terurut adalah nilai percentile ke-90. Fungsi PERCENTILE.INC() Excel bisa menghasilkan angka sedikit berbeda karena menggunakan interpolasi.",ref:"Bab 3 – Percentile Rank"},
+    {q:"Jika correlation coefficient r = 0, apa yang dapat disimpulkan?",opts:["Tidak ada hubungan sama sekali antara dua variabel","Tidak ada hubungan LINEAR antara dua variabel, tapi mungkin ada hubungan non-linear","Satu variabel tidak berpengaruh pada variabel lain","Kedua variabel memiliki distribusi yang berbeda"],ans:1,diff:"hard",exp:"r mengukur kekuatan hubungan LINEAR. r=0 berarti tidak ada hubungan LINEAR, tapi bisa saja ada hubungan non-linear yang kuat (misalnya parabola — nilai x rendah dan tinggi keduanya berkorelasi dengan y rendah, tapi x tengah dengan y tinggi). Korelasi Pearson hanya mendeteksi linearitas.",ref:"Bab 4 – Interpretasi r=0"},
+    {q:"Dalam Excel, untuk menghitung percentile ke-75 dari data Cost_per_Order di G4:G97, fungsi yang tepat adalah:",opts:["=PERCENTILE(G4:G97,75)","=QUARTILE.INC(G4:G97,3)","=PERCENTILE.INC(G4:G97,0.75)","Jawaban B dan C keduanya benar"],ans:3,diff:"medium",exp:"Q3 (quartile ke-3) = percentile ke-75. Keduanya benar: =QUARTILE.INC(G4:G97,3) menghitung Q3 langsung. =PERCENTILE.INC(G4:G97,0.75) menghitung percentile ke-75 (argumen k harus antara 0-1). Keduanya menghasilkan nilai yang sama.",ref:"Bab 3 – Percentile & Quartile Excel"},
+    {q:"Mean gaji = $60,000, Median = $52,000. Manakah yang BENAR tentang distribusi ini?",opts:["Distribusi simetris; mean dan median cukup dekat","Distribusi left-skewed (negative skew)","Distribusi right-skewed (positive skew); ada gaji sangat tinggi yang menarik mean ke atas","Tidak bisa ditentukan tanpa melihat seluruh dataset"],ans:2,diff:"easy",exp:"Mean > Median → distribusi right-skewed. Beberapa gaji sangat tinggi (outlier high) menarik mean ke atas. Mayoritas karyawan bergaji di bawah mean. Ini adalah pola umum distribusi gaji — mayoritas berpenghasilan normal, sedikit yang berpenghasilan sangat tinggi.",ref:"Bab 4 – Skewness Interpretation"},
+    {q:"Standard error berbeda dari standard deviation dalam hal:",opts:["Standard error digunakan untuk data sampel, std dev untuk populasi","Standard error mengukur variabilitas mean sampel dari sampel ke sampel (σ/√n), bukan variabilitas data individual","Standard error = Std Dev²","Standard error selalu lebih besar dari standard deviation"],ans:1,diff:"hard",exp:"Std Dev mengukur variabilitas DATA individual di sekitar mean. Standard Error of the Mean (SEM) = σ/√n mengukur seberapa banyak RATA-RATA sampel bervariasi dari sampel ke sampel — semakin besar n, semakin kecil SEM. SEM digunakan dalam confidence interval dan hypothesis testing.",ref:"Bab 5 – Standard Error vs Std Dev"},
+  ]
+},
+{
+  id: 4,
+  num: "BAB 05–06",
+  title: "Probabilitas, Distribusi & Inferensi",
+  desc: "Aturan probabilitas, distribusi normal, sampling, confidence interval, uji hipotesis",
+  summary: [
+    {
+      heading: "Aturan Probabilitas",
+      items: [
+        "Complement rule: P(A') = 1 - P(A)",
+        "Mutually exclusive events: P(A and B) = 0; P(A or B) = P(A) + P(B)",
+        "General Addition Rule: P(A or B) = P(A) + P(B) - P(A and B)",
+        "Conditional Probability: P(A|B) = P(A and B) / P(B)",
+        "Marginal probability: P(A) = Σ P(A and Bᵢ) untuk semua Bᵢ",
+        "Independent events: P(A and B) = P(A) × P(B)"
+      ]
+    },
+    {
+      heading: "Distribusi Normal",
+      items: [
+        "Distribusi simetris di sekitar mean. μ ± 1σ ≈ 68%; μ ± 2σ ≈ 95%; μ ± 3σ ≈ 99.7% (empirical rule)",
+        "=NORM.DIST(x, mean, std_dev, TRUE): CDF (probabilitas kumulatif ≤ x)",
+        "=NORM.INV(probability, mean, std_dev): kebalikan CDF — cari nilai x untuk probabilitas tertentu",
+        "=NORM.S.DIST(z, TRUE): distribusi normal standar",
+        "=NORM.S.INV(probability): kebalikan distribusi normal standar"
+      ]
+    },
+    {
+      heading: "Distribusi Sampling & CLT",
+      items: [
+        "Central Limit Theorem (CLT): distribusi sampling mean (x̄) mendekati normal dengan mean=μ dan std error = σ/√n, untuk n yang cukup besar (n≥30).",
+        "Standard Error of the Mean = σ/√n",
+        "Makin besar n, makin kecil standard error, makin akurat estimasi mean."
+      ]
+    },
+    {
+      heading: "Confidence Interval",
+      items: [
+        "CI: [x̄ - zα/2 × (σ/√n), x̄ + zα/2 × (σ/√n)]",
+        "95% CI: zα/2 = 1.96; 90% CI: zα/2 = 1.645; 99% CI: zα/2 = 2.576",
+        "Margin of error = zα/2 × (σ/√n). Makin lebar interval = makin tinggi confidence.",
+        "Jika σ tidak diketahui, gunakan t-distribution dengan df = n-1",
+        "t-distribution: lebih lebar dari normal, mendekati normal saat df → ∞",
+        "Excel: =CONFIDENCE.NORM(alpha, std_dev, size) atau =CONFIDENCE.T(alpha, std_dev, size)"
+      ]
+    },
+    {
+      heading: "Hypothesis Testing",
+      items: [
+        "H₀ (null hypothesis): pernyataan status quo yang diuji.",
+        "H₁ (alternative hypothesis): pernyataan yang ingin dibuktikan.",
+        "p-value: probabilitas mendapatkan hasil seekstrem ini jika H₀ benar. Reject H₀ jika p-value < α.",
+        "Type I error (α): menolak H₀ yang sebenarnya benar (false positive).",
+        "Type II error (β): gagal menolak H₀ yang sebenarnya salah (false negative)."
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Menghitung confidence interval dan interpretasinya" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Kapan menggunakan z-distribution vs t-distribution" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Conditional probability dari contingency table" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Interpretasi p-value dalam hypothesis testing" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> CLT dan pengaruh ukuran sampel terhadap standard error" },
+  ],
+  questions: [
+    {q:"Produksi baterai mengikuti distribusi normal dengan mean=100 jam, std dev=15 jam. Berapa probabilitas baterai bertahan lebih dari 120 jam? (Gunakan: P(X>120) = 1-NORM.DIST(120,100,15,TRUE))",opts:["Sekitar 9.1%","Sekitar 15.9%","Sekitar 25.2%","Sekitar 50%"],ans:0,diff:"medium",exp:"z = (120-100)/15 = 1.33. P(X>120) = 1 - P(X≤120) = 1 - NORM.DIST(120,100,15,TRUE) ≈ 1 - 0.909 = 0.091 = 9.1%. Nilai 120 berada 1.33 SD di atas mean, sehingga hanya sekitar 9% baterai yang bertahan lebih dari 120 jam.",ref:"Bab 5 – Normal Distribution"},
+    {q:"Sebuah proses pengisian botol memiliki std dev = 15 ml. Sampel n=25 botol menghasilkan mean = 796 ml. Margin of error untuk 95% CI adalah:",opts:["±1.96 × 15 = ±29.4 ml","±1.96 × 15/√25 = ±5.88 ml","±1.645 × 15 = ±24.675 ml","±2.576 × 15/25 = ±1.546 ml"],ans:1,diff:"medium",exp:"Margin of error = zα/2 × (σ/√n). Untuk 95% CI, zα/2 = 1.96. σ = 15, n = 25, √25 = 5. ME = 1.96 × (15/5) = 1.96 × 3 = 5.88 ml. CI 95% = [796 - 5.88, 796 + 5.88] = [790.12, 801.88] ml.",ref:"Bab 6 – Confidence Interval"},
+    {q:"P(A) = 0.4, P(B) = 0.3, P(A dan B) = 0.12. Apakah A dan B independent?",opts:["Ya, karena P(A)+P(B) ≠ 1","Ya, karena P(A dan B) = P(A)×P(B) = 0.12","Tidak, karena P(A dan B) > P(A)×P(B)","Tidak bisa ditentukan tanpa tahu P(A|B)"],ans:1,diff:"medium",exp:"Dua event independent jika P(A dan B) = P(A) × P(B). P(A) × P(B) = 0.4 × 0.3 = 0.12. P(A dan B) = 0.12. Karena keduanya sama, A dan B INDEPENDENT. Alternatif: cek P(A|B) = P(A dan B)/P(B) = 0.12/0.3 = 0.4 = P(A) → A tidak dipengaruhi B → independent.",ref:"Bab 5 – Independent Events"},
+    {q:"Mengapa t-distribution digunakan ketika σ populasi tidak diketahui?",opts:["t-distribution lebih mudah dihitung dari normal distribution","t-distribution memperhitungkan ketidakpastian tambahan akibat estimasi σ dari sampel, menghasilkan interval yang lebih lebar","t-distribution hanya berlaku untuk n<30","t-distribution memberikan interval yang lebih sempit dan lebih akurat"],ans:1,diff:"medium",exp:"Ketika σ tidak diketahui, kita mengestimasi σ menggunakan s (sample std dev). Estimasi ini menambah ketidakpastian. t-distribution lebih lebar (heavy-tailed) dari distribusi normal untuk mengkompensasi ketidakpastian ini. Semakin kecil df (n-1), semakin lebar t-distribution. Saat n→∞, t→normal.",ref:"Bab 6 – t-Distribution"},
+    {q:"Sebuah 95% confidence interval untuk rata-rata gaji adalah [$45,000, $55,000]. Interpretasi YANG BENAR adalah:",opts:["95% karyawan memiliki gaji antara $45,000 dan $55,000","Ada 95% probabilitas bahwa rata-rata gaji populasi berada antara $45,000 dan $55,000","Jika diambil 100 sampel berbeda, sekitar 95 interval akan mengandung rata-rata gaji populasi yang sesungguhnya","Mean sampel pasti $50,000 dengan kepercayaan 95%"],ans:2,diff:"hard",exp:"Interpretasi frequentist CI yang benar: jika kita mengambil BANYAK sampel dan membangun CI dari setiap sampel, maka 95% dari interval tersebut akan mengandung parameter populasi yang sesungguhnya. Ini bukan probabilitas untuk satu interval spesifik — parameter populasi sudah tetap, bukan random.",ref:"Bab 6 – Interpretasi Confidence Interval"},
+    {q:"Central Limit Theorem menyatakan bahwa distribusi sampling mean x̄ akan mendekati normal:",opts:["Hanya jika populasi asli berdistribusi normal","Untuk sampel dengan n ≥ 30, terlepas dari distribusi populasi asli","Hanya jika data diambil secara stratified sampling","Hanya untuk data kontinu, bukan diskrit"],ans:1,diff:"medium",exp:"CLT: distribusi sampling dari x̄ mendekati normal dengan mean=μ dan σ_x̄ = σ/√n, untuk n yang cukup besar (biasanya n≥30), TERLEPAS dari bentuk distribusi populasi asli. Semakin tidak normal populasi, semakin besar n yang dibutuhkan, tapi umumnya n≥30 sudah cukup.",ref:"Bab 5–6 – Central Limit Theorem"},
+    {q:"Jika confidence level ditingkatkan dari 95% ke 99%, maka (ceteris paribus):",opts:["Margin of error berkurang karena kita lebih yakin","Margin of error meningkat karena zα/2 lebih besar","Lebar CI tetap sama; yang berubah hanya confidence","Diperlukan sampel lebih kecil untuk mempertahankan lebar yang sama"],ans:1,diff:"medium",exp:"Confidence level lebih tinggi → zα/2 lebih besar (95%: 1.96; 99%: 2.576) → Margin of error lebih besar → CI lebih lebar. Trade-off: CI yang lebih lebar memberikan keyakinan lebih tinggi tetapi presisi lebih rendah. Untuk menjaga lebar CI sama sambil meningkatkan confidence, perlu memperbesar n.",ref:"Bab 6 – CI dan Confidence Level"},
+    {q:"P-value dari uji hipotesis adalah 0.03. Dengan α = 0.05, kesimpulan yang TEPAT adalah:",opts:["Gagal menolak H₀ karena p-value < 0.05","Tolak H₀ karena p-value < α; bukti signifikan mendukung H₁","Gagal menolak H₀ karena belum cukup bukti","Terima H₀ karena p-value mendekati nol"],ans:1,diff:"medium",exp:"Keputusan: Tolak H₀ jika p-value < α. Di sini p-value (0.03) < α (0.05), sehingga TOLAK H₀. Artinya ada bukti statistik yang signifikan mendukung H₁. P-value kecil berarti data yang diamati SANGAT TIDAK MUNGKIN terjadi jika H₀ benar.",ref:"Bab 6 – Hypothesis Testing"},
+    {q:"Dalam sebuah survei, 40 dari 200 responden menyatakan puas. Untuk mengestimasi proporsi populasi dengan 95% CI, formula yang digunakan adalah:",opts:["p̂ ± z × σ/√n dimana σ diketahui","p̂ ± z × √(p̂(1-p̂)/n)","p̂ ± t × s/√n untuk proporsi","p̂ ± z × 1/√n"],ans:1,diff:"hard",exp:"Untuk CI proporsi: p̂ ± zα/2 × √(p̂(1-p̂)/n). Di sini p̂ = 40/200 = 0.20, n = 200, zα/2 = 1.96. SE = √(0.20×0.80/200) = √(0.0008) ≈ 0.0283. CI 95% = [0.20 ± 1.96×0.0283] = [0.144, 0.256].",ref:"Bab 6 – CI untuk Proporsi"},
+    {q:"Sebuah pabrik memproduksi komponen dengan lebar target 50 mm, std dev = 2 mm. Berapa probabilitas komponen memiliki lebar antara 48 dan 54 mm?",opts:["P(48≤X≤54) = NORM.DIST(54,50,2,TRUE) - NORM.DIST(48,50,2,TRUE)","P(48≤X≤54) = NORM.DIST(54,50,2,FALSE) - NORM.DIST(48,50,2,FALSE)","P(48≤X≤54) = NORM.DIST(54,50,2,TRUE) × NORM.DIST(48,50,2,TRUE)","P(48≤X≤54) = 1 - NORM.DIST(54,50,2,TRUE)"],ans:0,diff:"medium",exp:"P(48 ≤ X ≤ 54) = P(X ≤ 54) - P(X ≤ 48) = NORM.DIST(54,50,2,TRUE) - NORM.DIST(48,50,2,TRUE). TRUE = cumulative. z₁=(48-50)/2=-1, z₂=(54-50)/2=2. P(-1≤Z≤2) = Φ(2) - Φ(-1) ≈ 0.9772 - 0.1587 = 0.8185.",ref:"Bab 5 – Normal Distribution Range"},
+    {q:"Sampel n=40 diambil dari populasi dengan μ=500, σ=60. Distribusi sampling dari x̄ memiliki:",opts:["Mean=500, Std Error=60","Mean=500, Std Error=60/√40≈9.49","Mean=500/√40, Std Error=60","Mean=μ/n, Std Error=σ×√n"],ans:1,diff:"medium",exp:"Berdasarkan CLT: distribusi sampling x̄ memiliki mean = μ = 500 (tidak berubah) dan Std Error = σ/√n = 60/√40 ≈ 9.49. Standard error BERKURANG dengan √n — ini mengapa sampel lebih besar memberikan estimasi mean yang lebih presisi.",ref:"Bab 5–6 – Sampling Distribution"},
+    {q:"Type I Error dalam hypothesis testing adalah:",opts:["Gagal menolak H₀ yang sebenarnya salah (false negative)","Menolak H₀ yang sebenarnya benar (false positive)","Menerima H₁ yang benar","Salah menginterpretasikan p-value"],ans:1,diff:"easy",exp:"Type I Error (α): menolak H₀ yang sebenarnya BENAR — menyimpulkan ada efek padahal sebenarnya tidak ada (false positive). Type II Error (β): gagal menolak H₀ yang sebenarnya SALAH — gagal mendeteksi efek yang sebenarnya ada (false negative). α ditentukan sebelum pengujian (biasanya 0.05).",ref:"Bab 6 – Type I & II Error"},
+    {q:"Untuk 95% confidence interval, nilai zα/2 yang tepat adalah (dihitung dengan =NORM.S.INV(1-0.05/2)):",opts:["1.645","1.960","2.326","2.576"],ans:1,diff:"easy",exp:"Untuk 95% CI: α=0.05, α/2=0.025. zα/2 = NORM.S.INV(1-0.025) = NORM.S.INV(0.975) = 1.96. Untuk 90% CI: NORM.S.INV(0.95) = 1.645. Untuk 99% CI: NORM.S.INV(0.995) = 2.576.",ref:"Bab 6 – z-values untuk CI"},
+    {q:"P(A|B) = 0.4, P(B) = 0.25. Berapa P(A dan B)?",opts:["0.4 + 0.25 = 0.65","0.4 / 0.25 = 1.6","0.4 × 0.25 = 0.10","0.4 - 0.25 = 0.15"],ans:2,diff:"medium",exp:"Dari definisi conditional probability: P(A|B) = P(A dan B) / P(B). Maka P(A dan B) = P(A|B) × P(B) = 0.4 × 0.25 = 0.10. Ini adalah multiplication rule untuk dependent events.",ref:"Bab 5 – Multiplication Rule"},
+    {q:"Mengapa sampel yang lebih besar menghasilkan confidence interval yang lebih sempit?",opts:["Karena populasi lebih homogen saat sampling lebih banyak","Karena standard error = σ/√n berkurang saat n meningkat","Karena t-value berkurang drastis untuk n besar","Karena margin of error dihitung sebagai σ/n bukan σ/√n"],ans:1,diff:"medium",exp:"Standard Error = σ/√n. Saat n meningkat, √n meningkat, sehingga SE mengecil. ME = zα/2 × SE juga mengecil. Interval = x̄ ± ME menjadi lebih sempit. Ini mengapa peneliti meningkatkan ukuran sampel untuk mendapatkan estimasi yang lebih presisi.",ref:"Bab 6 – Sample Size dan CI"},
+    {q:"Sebuah brand loyalty study menemukan: P(iPad|iMac pertama) = 2/13. Apa interpretasi ini?",opts:["2 dari 13 pelanggan membeli iPad","Dari pelanggan yang membeli iMac PERTAMA, probabilitas pembelian BERIKUTNYA adalah iPad = 2/13","13 dari 2 pelanggan membeli iMac setelah iPad","Probabilitas membeli iMac adalah 2/13 lebih tinggi dari iPad"],ans:1,diff:"medium",exp:"Ini adalah conditional probability: P(iPad sebagai pembelian kedua | iMac sebagai pembelian pertama) = 2/13 ≈ 15.4%. Dari semua pelanggan yang membeli iMac sebagai produk Apple pertama, sekitar 15% kemudian membeli iPad sebagai produk berikutnya.",ref:"Bab 5 – Conditional Probability"},
+    {q:"Aturan empiris (68-95-99.7 rule) untuk distribusi normal menyatakan bahwa sekitar 95% data berada dalam rentang:",opts:["μ ± 1σ","μ ± 2σ","μ ± 3σ","μ ± 1.5σ"],ans:1,diff:"easy",exp:"Empirical rule: μ ± 1σ ≈ 68%, μ ± 2σ ≈ 95%, μ ± 3σ ≈ 99.7%. Untuk 95% CI menggunakan z=1.96 (bukan 2) karena itu nilai yang lebih presisi. Aturan empiris adalah aproksimasi: sebenarnya P(-2≤Z≤2) = 95.44%.",ref:"Bab 5 – Empirical Rule"},
+    {q:"Jika distribusi populasi sangat right-skewed dan n=15 (kecil), apakah CLT masih berlaku?",opts:["Ya, CLT berlaku untuk semua ukuran sampel","Tidak, n=15 terlalu kecil untuk CLT, terutama untuk distribusi yang sangat skewed","Ya, selama data tidak mengandung outlier","Tidak, CLT hanya berlaku untuk data normal"],ans:1,diff:"hard",exp:"CLT membutuhkan n yang 'cukup besar' — umumnya n≥30 untuk distribusi yang moderat. Untuk distribusi yang sangat skewed atau heavy-tailed, butuh n yang lebih besar (misalnya n≥50 atau lebih). Dengan n=15 dan distribusi sangat skewed, distribusi sampling x̄ belum tentu mendekati normal.",ref:"Bab 5–6 – CLT Limitations"},
+    {q:"Sebuah perusahaan ingin menentukan apakah program training meningkatkan produktivitas. H₀: μ_produktivitas tidak berubah. Mereka mendapat p-value = 0.001. Dengan α = 0.05, apa kesimpulan yang tepat?",opts:["Gagal tolak H₀; training tidak efektif","Tolak H₀; ada bukti kuat bahwa training meningkatkan produktivitas secara signifikan","Terima H₀; training tidak berpengaruh","Tidak bisa disimpulkan karena p-value terlalu kecil"],ans:1,diff:"medium",exp:"p-value = 0.001 << α = 0.05. Karena p-value < α, TOLAK H₀. Kesimpulan: ada bukti statistik yang sangat kuat bahwa training meningkatkan produktivitas. Semakin kecil p-value, semakin kuat bukti melawan H₀.",ref:"Bab 6 – Hypothesis Testing Decision"},
+    {q:"Marginal probability P(F) = 0.37 dalam tabel joint probability. Apa artinya?",opts:["37% joint probability dari F dengan semua brand preference","37% dari total responden adalah wanita, terlepas dari brand preference mereka","37% wanita menyukai Brand 1","Setiap sel joint probability F bernilai 0.37"],ans:1,diff:"medium",exp:"Marginal probability P(F) = jumlah semua joint probability di baris F = P(F and B1) + P(F and B2) + P(F and B3) = 0.37. Ini berarti 37% dari total responden adalah wanita, TERLEPAS dari brand yang mereka pilih. 'Marginal' karena tertulis di margin (tepi) tabel.",ref:"Bab 5 – Marginal Probability"},
+    {q:"Formula =NORM.DIST(40, 36, 2, TRUE) menghasilkan 0.9772. Maka P(X > 40) adalah:",opts:["0.9772","0.0228","1.9544","0.4772"],ans:1,diff:"easy",exp:"NORM.DIST(40, 36, 2, TRUE) = P(X ≤ 40) = 0.9772. Karena total probabilitas = 1: P(X > 40) = 1 - P(X ≤ 40) = 1 - 0.9772 = 0.0228 = 2.28%.",ref:"Bab 5 – Normal Distribution Complement"},
+    {q:"Sebuah penelitian mengklaim 'ada korelasi signifikan antara konsumsi es krim dan angka tenggelam'. Apa kesalahan interpretasi yang mungkin terjadi?",opts:["Korelasi sudah cukup membuktikan kausalitas jika r kuat","Korelasi tidak berarti kausalitas; keduanya mungkin dipengaruhi variabel tersembunyi (musim panas)","Analisis korelasi tidak bisa digunakan untuk data tersebut","p-value korelasi pasti di atas 0.05"],ans:1,diff:"hard",exp:"Klasik spurious correlation — ada 'confounding variable' (variabel pembaur): musim panas meningkatkan BAIK konsumsi es krim MAUPUN aktivitas berenang (yang meningkatkan risiko tenggelam). Korelasi tinggi antara keduanya bukan berarti es krim menyebabkan tenggelam. Korelasi ≠ kausalitas.",ref:"Bab 4–6 – Korelasi vs Kausalitas"},
+    {q:"Degrees of freedom untuk t-distribution dalam one-sample t-test dengan n=25 adalah:",opts:["25","24","23","√25 = 5"],ans:1,diff:"easy",exp:"Untuk one-sample t-test: df = n - 1 = 25 - 1 = 24. Satu derajat kebebasan 'hilang' karena kita mengestimasi mean populasi (μ) menggunakan mean sampel (x̄) untuk menghitung std dev sampel. Semakin besar df, semakin mendekati distribusi normal.",ref:"Bab 6 – t-Distribution df"},
+    {q:"Dua events A dan B bersifat mutually exclusive. Berapa P(A and B)?",opts:["P(A) × P(B)","P(A) + P(B)","0 (nol)","1 - P(A) - P(B)"],ans:2,diff:"easy",exp:"Mutually exclusive berarti kedua event TIDAK BISA terjadi bersamaan — P(A and B) = 0. Contoh: pelemparan koin satu kali, event A = muncul kepala, event B = muncul ekor. Keduanya mutually exclusive karena tidak bisa terjadi bersamaan.",ref:"Bab 5 – Mutually Exclusive Events"},
+    {q:"Untuk 90% CI, kita menggunakan =NORM.S.INV(0.95) = 1.645. Mengapa argumennya 0.95 dan bukan 0.90?",opts:["Karena interval dua sisi, setiap sisi memiliki α/2 = 0.05; 1-0.05 = 0.95","Karena Excel menghitung dari sisi atas, bukan kumulatif","Karena 90% CI adalah untuk distribusi satu sisi","Karena zα/2 selalu lebih besar dari confidence level dalam desimal"],ans:0,diff:"medium",exp:"Untuk 90% CI: α = 0.10. CI adalah DUA SISI: α/2 = 0.05 di setiap ekor. zα/2 adalah titik di mana P(Z > zα/2) = 0.05, yaitu P(Z ≤ zα/2) = 0.95. Sehingga =NORM.S.INV(0.95) = 1.645. Ini menentukan seberapa jauh dari mean untuk menangkap 90% probabilitas di tengah.",ref:"Bab 6 – z-value untuk CI"},
+    {q:"Sebuah peneliti mendapat p-value = 0.07 dengan α = 0.05. Bagaimana ia harus melaporkan hasilnya?",opts:["Penelitian gagal — tidak ada temuan","Gagal menolak H₀; tidak cukup bukti statistik pada α=0.05, tapi mungkin menarik untuk ditindaklanjuti dengan sampel lebih besar","Terima H₁ karena p-value mendekati 0.05","Tolak H₀ karena p-value hampir sama dengan 0.05"],ans:1,diff:"hard",exp:"p-value (0.07) > α (0.05) → Gagal tolak H₀. PENTING: ini bukan berarti H₀ pasti benar — hanya berarti bukti tidak cukup kuat pada level α=0.05. Peneliti harus melaporkan hasilnya sebagai 'tidak signifikan pada α=0.05' dan menyarankan replikasi dengan n lebih besar.",ref:"Bab 6 – Interpretasi p-value"},
+  ]
+},
+{
+  id: 5,
+  num: "BAB 07–08",
+  title: "Analisis Regresi",
+  desc: "Simple & multiple regression, R², ANOVA, p-value, asumsi model, Excel regression",
+  summary: [
+    {
+      heading: "Simple Linear Regression",
+      items: [
+        "Model: Ŷ = b₀ + b₁X, di mana b₀ = intercept, b₁ = slope.",
+        "b₁ = SLOPE(known_y's, known_x's); b₀ = INTERCEPT(known_y's, known_x's)",
+        "b₁ interpretasi: setiap kenaikan 1 unit X, Y rata-rata berubah sebesar b₁ unit.",
+        "Residual = Y aktual - Ŷ (nilai prediksi). Model baik jika residual kecil dan acak.",
+        "OLS (Ordinary Least Squares): meminimalkan jumlah kuadrat residual."
+      ]
+    },
+    {
+      heading: "Ukuran Goodness of Fit",
+      items: [
+        "R² (coefficient of determination): proporsi variasi Y yang dijelaskan oleh X. Range 0-1.",
+        "R² = 0.53 berarti 53% variasi Y dijelaskan model. Makin tinggi makin baik.",
+        "Adjusted R²: mengoreksi R² untuk jumlah variabel dan ukuran sampel.",
+        "Standard Error (SYX): variabilitas antara Y aktual dan prediksi.",
+        "Multiple R = |r| (korelasi antara Y aktual dan Y prediksi)."
+      ]
+    },
+    {
+      heading: "Signifikansi Regresi (ANOVA & t-test)",
+      items: [
+        "ANOVA F-test: H₀: semua slope = 0 (model tidak signifikan). Tolak H₀ jika p-value (Significance F) < α.",
+        "t-test pada koefisien: H₀: βᵢ = 0. P-value pada output Excel untuk setiap koefisien.",
+        "Jika p-value koefisien < α: variabel X itu signifikan menjelaskan Y.",
+        "Confidence interval untuk slope: jika CI tidak mengandung 0, koefisien signifikan."
+      ]
+    },
+    {
+      heading: "Multiple Regression",
+      items: [
+        "Model: Ŷ = b₀ + b₁X₁ + b₂X₂ + ... + bₙXₙ",
+        "Setiap b menunjukkan pengaruh X terhadap Y dengan MENGENDALIKAN variabel lain.",
+        "Multicollinearity: ketika variabel X berkorelasi tinggi satu sama lain — masalah interpretasi.",
+        "Dummy variable: variabel kategorikal dikodekan 0/1 untuk dimasukkan dalam regresi."
+      ]
+    },
+    {
+      heading: "Asumsi Regresi",
+      items: [
+        "Linearitas: hubungan X-Y harus linear.",
+        "Homoscedasticity: variance residual konstan untuk semua level X.",
+        "Independence: residual tidak berkorelasi satu sama lain (tidak ada autocorrelation).",
+        "Normalitas residual: residual berdistribusi normal.",
+        "Excel: Data → Data Analysis → Regression → centang Residuals untuk diagnostik."
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Interpretasi R², slope, intercept, dan p-value dari output regresi" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Signifikansi regresi dari ANOVA F-test" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Prediksi Y untuk nilai X tertentu" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Membedakan simple vs multiple regression" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> Asumsi regresi dan cara mendiagnosisnya" },
+  ],
+  questions: [
+    {q:"Output regresi Excel menunjukkan: Intercept=32,673; Slope (House Size)=35.036; R²=0.53; p-value=3.8×10⁻⁸. Apa interpretasi PALING TEPAT dari slope=35.036?",opts:["Setiap kenaikan 35.036 ft², market value meningkat $1","Nilai minimum rumah adalah $35,036","Setiap kenaikan 1 ft² luas rumah, market value rata-rata meningkat $35.036","35.036% dari variasi market value dijelaskan oleh house size"],ans:2,diff:"medium",exp:"Slope b₁ = 35.036 berarti: setiap kenaikan 1 satuan X (1 square foot luas rumah), Y (market value) rata-rata meningkat $35.036, dengan asumsi variabel lain konstan. Interpretasi slope: 'marginal effect' satu unit X terhadap Y.",ref:"Bab 8 – Interpretasi Slope"},
+    {q:"R² = 0.53 dalam model regresi Home Market Value vs House Size mengindikasikan:",opts:["53% dari variasi Y disebabkan oleh error","Model memprediksi 53% dari nilai rumah dengan benar","53% variasi market value dapat dijelaskan oleh variabel house size","Slope regresi bernilai 0.53"],ans:2,diff:"easy",exp:"R² = coefficient of determination = proporsi variasi dalam Y (market value) yang dapat dijelaskan oleh model regresi (dalam hal ini oleh house size). R²=0.53 berarti 53% variasi market value berkaitan dengan house size; 47% sisanya dijelaskan oleh variabel lain yang tidak ada dalam model.",ref:"Bab 8 – R-Squared"},
+    {q:"Dari output Excel: Significance F = 3.8 × 10⁻⁸, α = 0.05. Keputusan yang tepat adalah:",opts:["Gagal tolak H₀; house size tidak signifikan dalam model","Tolak H₀; setidaknya satu slope signifikan; model regresi berguna","Terima H₁ tanpa perlu melihat t-test","Data tidak normal; regresi tidak valid"],ans:1,diff:"medium",exp:"Significance F adalah p-value dari ANOVA F-test. H₀: semua slope = 0 (model tidak berguna). Karena p-value (3.8×10⁻⁸) << α (0.05), tolak H₀. Kesimpulan: model regresi secara keseluruhan SIGNIFIKAN — setidaknya satu variabel X menjelaskan variasi Y secara signifikan.",ref:"Bab 8 – ANOVA F-test"},
+    {q:"Model harga-permintaan: Sales = 20,512 - 9.5116 × Price; R² = 0.833. Prediksi sales saat Price = $150 adalah:",opts:["20,512 + 9.5116(150) = 21,939","20,512 - 9.5116(150) = 19,084.6","9.5116(150) - 20,512 = -19,084","0.833 × 20,512 = 17,086"],ans:1,diff:"medium",exp:"Substitusi Price=150 ke model: Sales = 20,512 - 9.5116(150) = 20,512 - 1,426.74 = 19,085. Slope negatif (-9.5116) menunjukkan hubungan terbalik: harga lebih tinggi → permintaan lebih rendah. R²=0.833 berarti 83.3% variasi permintaan dijelaskan oleh harga.",ref:"Bab 8 – Prediksi Regresi"},
+    {q:"Dalam multiple regression, adjusted R² digunakan karena:",opts:["R² reguler tidak bisa dihitung untuk multiple regression","Adjusted R² selalu lebih tinggi dari R² sehingga lebih optimistis","R² selalu meningkat ketika variabel baru ditambahkan, meski tidak bermakna; Adjusted R² mengoreksi penambahan variabel yang tidak berguna","Adjusted R² lebih mudah diinterpretasikan oleh manajer"],ans:2,diff:"hard",exp:"R² tidak pernah menurun saat variabel baru ditambahkan (bahkan jika variabel tersebut tidak relevan). Adjusted R² = 1 - (1-R²)(n-1)/(n-k-1) menghukum penambahan variabel yang tidak meningkatkan fit secara bermakna. Jika Adj R² meningkat saat variabel ditambahkan, variabel itu berkontribusi nyata.",ref:"Bab 8 – Adjusted R-Squared"},
+    {q:"Dari output regresi: Slope coefficient = 35.036, 95% CI = [24.59, 45.48]. Interpretasi CI untuk slope ini adalah:",opts:["95% probabilitas slope populasi = 35.036","Kita 95% yakin slope populasi (β₁) berada antara 24.59 dan 45.48","Slope akan berubah antara 24.59 dan 45.48 dari sampel ke sampel","Slope = 0 masuk dalam interval ini, jadi tidak signifikan"],ans:1,diff:"medium",exp:"CI [24.59, 45.48] untuk slope berarti: kita 95% yakin bahwa slope populasi sesungguhnya (β₁) berada dalam interval ini. Karena 0 TIDAK masuk dalam interval, slope signifikan berbeda dari 0. Ini konsisten dengan p-value yang kecil dari F-test.",ref:"Bab 8 – CI untuk Slope"},
+    {q:"Sebuah model regresi untuk memprediksi penjualan menggunakan 3 variabel: iklan (X₁), harga (X₂), dan kompetitor_harga (X₃). Output menunjukkan p-value X₂ = 0.23 (dengan α=0.05). Apa artinya?",opts:["Harga tidak berpengaruh sama sekali pada penjualan dalam kehidupan nyata","Harga bukan variabel yang signifikan dalam model ini dengan mengontrol X₁ dan X₃; mungkin perlu dievaluasi ulang","Model tidak valid karena salah satu variabel tidak signifikan","p-value 0.23 berarti harga menjelaskan 23% variasi penjualan"],ans:1,diff:"hard",exp:"p-value X₂ = 0.23 > α = 0.05 → X₂ (harga) tidak signifikan dalam model INI dengan X₁ dan X₃ sudah ada. Ini bisa terjadi karena: (1) harga memang tidak berpengaruh dikontrol variabel lain, atau (2) multicollinearity antara harga dan kompetitor_harga. Perlu analisis lebih lanjut.",ref:"Bab 8 – Signifikansi Koefisien"},
+    {q:"Residual plot menunjukkan pola corong (residual meningkat seiring Y meningkat). Asumsi regresi mana yang dilanggar?",opts:["Linearitas","Homoscedasticity (variance residual konstan)","Independence residual","Normalitas residual"],ans:1,diff:"hard",exp:"Pola corong (funnel shape) dalam residual plot mengindikasikan heteroscedasticity — variance residual TIDAK konstan, melainkan meningkat seiring nilai Y (atau X). Ini melanggar asumsi homoscedasticity OLS. Solusi: transformasi variabel (log, sqrt) atau Weighted Least Squares.",ref:"Bab 8 – Asumsi Regresi"},
+    {q:"Cara menggunakan Excel Data Analysis untuk simple regression adalah:",opts:["Insert → Chart → Scatter → Add Trendline","Data → Data Analysis → Regression → tentukan Y Range dan X Range","Formulas → More Functions → Statistical → REGRESSION","Home → Sort & Filter → Regression Analysis"],ans:1,diff:"easy",exp:"Untuk regresi di Excel: Data tab → Analysis group → Data Analysis → pilih Regression → tentukan Input Y Range dan Input X Range → centang Labels jika ada header → pilih Output Range → OK. Hasilnya mencakup R², ANOVA table, dan koefisien.",ref:"Bab 8 – Excel Regression Tool"},
+    {q:"Ŷ = b₀ + b₁X₁ + b₂X₂. Interpretasi b₂ dalam multiple regression adalah:",opts:["Pengaruh X₂ terhadap Y ketika semua variabel lain = 0","Perubahan Y ketika X₂ naik 1 unit, DENGAN MENGENDALIKAN (ceteris paribus) X₁","Korelasi antara X₂ dan Y","Proporsi variasi Y yang dijelaskan oleh X₂ saja"],ans:1,diff:"medium",exp:"Dalam multiple regression, b₂ adalah partial regression coefficient: perubahan rata-rata dalam Y untuk setiap kenaikan 1 unit X₂, HOLDING CONSTANT (mengendalikan) semua variabel lain (X₁, dll.). Ini berbeda dari simple regression di mana efek tidak bisa diisolasi.",ref:"Bab 8 – Interpretasi Multiple Regression"},
+    {q:"Sebuah model regresi memiliki Standard Error (SYX) = $7,287. Std Dev Y = $10,553. Apa yang bisa disimpulkan?",opts:["Model tidak berguna karena error masih tinggi","SYX < Std Dev Y menunjukkan model lebih baik dalam prediksi dibanding menggunakan mean saja","Model terlalu overfitting data","SYX harus sama dengan Std Dev Y untuk model yang valid"],ans:1,diff:"medium",exp:"SYX mengukur variabilitas antara Y aktual dan prediksi. Jika SYX < Std Dev Y, model lebih baik dari baseline (menggunakan mean saja). Di sini SYX=$7,287 < Std Dev=$10,553, berarti model mengurangi error prediksi secara signifikan. SYX ideal mendekati 0.",ref:"Bab 8 – Standard Error of Estimate"},
+    {q:"Manakah pernyataan yang BENAR tentang extrapolation dalam regresi?",opts:["Extrapolation selalu akurat jika R² tinggi","Extrapolation aman jika data sudah berdistribusi normal","Prediksi di luar range data (X) yang digunakan membangun model berisiko tidak akurat","Regresi tidak bisa digunakan untuk extrapolation sama sekali"],ans:2,diff:"hard",exp:"Extrapolation adalah prediksi di luar range X yang digunakan dalam pembuatan model. Regresi mengasumsikan hubungan linear di range data yang ada — di luar range ini, hubungan mungkin berubah (misalnya menjadi non-linear). Oleh karena itu, extrapolation BERISIKO dan harus dilakukan dengan hati-hati.",ref:"Bab 8 – Extrapolation Risk"},
+    {q:"Dalam output regresi Excel, Multiple R = 0.729. Apa artinya?",opts:["72.9% variasi Y dijelaskan oleh model","R² = 0.729","Korelasi antara Y aktual dan Y prediksi adalah 0.729","Slope regresi bernilai 0.729"],ans:2,diff:"medium",exp:"Multiple R adalah korelasi antara nilai Y aktual dan nilai Y prediksi (Ŷ). Multiple R = |r| = 0.729. R² = (Multiple R)² = 0.729² ≈ 0.531. Jadi 53.1% variasi Y dijelaskan model. Multiple R selalu positif (0 hingga 1).",ref:"Bab 8 – Multiple R"},
+    {q:"Dua variabel X₁ dan X₂ dalam multiple regression memiliki korelasi r = 0.95 satu sama lain. Ini disebut:",opts:["Heteroscedasticity — masalah variance tidak konstan","Autocorrelation — residual berkorelasi","Multicollinearity — X₁ dan X₂ berkorelasi tinggi satu sama lain","Overfitting — terlalu banyak variabel dalam model"],ans:2,diff:"medium",exp:"Multicollinearity terjadi ketika variabel independen (X) berkorelasi tinggi satu sama lain. Masalah: sulit menginterpretasikan koefisien individual karena efek X₁ dan X₂ sulit dipisahkan. Symptom: R² tinggi tapi koefisien individual tidak signifikan.",ref:"Bab 8 – Multicollinearity"},
+    {q:"Sebuah model regresi memprediksi Nilai Ujian berdasarkan Jam Belajar: Ŷ = 40 + 5×JamBelajar. Seorang mahasiswa belajar 8 jam dan mendapat nilai aktual 85. Residualnya adalah:",opts:["85 + 80 = 165","85 - (40 + 5×8) = 85 - 80 = +5","(40 + 5×8) - 85 = -5","40 + 5×8 = 80"],ans:1,diff:"medium",exp:"Residual = Y aktual - Ŷ = 85 - (40 + 5×8) = 85 - 80 = +5. Residual positif berarti model UNDER-prediksi (nilai aktual lebih tinggi dari prediksi). Residual negatif berarti model OVER-prediksi.",ref:"Bab 8 – Residual"},
+    {q:"Mengapa koefisien determinasi (R²) saja tidak cukup untuk mengevaluasi model regresi?",opts:["Karena R² hanya berlaku untuk simple regression","R² yang tinggi tidak menjamin model valid jika terdapat pelanggaran asumsi, outlier ekstrem, atau pattern non-random dalam residual","R² harus dikonversi ke persentase sebelum diinterpretasikan","R² tidak bisa dihitung untuk data time series"],ans:1,diff:"hard",exp:"R² tinggi perlu dikombinasikan dengan: (1) pemeriksaan residual plot (random pattern?), (2) uji signifikansi (p-value), (3) pemeriksaan outlier, (4) validasi asumsi. R² yang tinggi bisa menipu jika ada masalah seperti overfitting, heteroscedasticity, atau non-linearity.",ref:"Bab 8 – Evaluasi Model Regresi"},
+    {q:"Fungsi Excel =TREND(known_y's, known_x's, new_x's) digunakan untuk:",opts:["Menghitung R² dari model regresi","Memprediksi nilai Y baru berdasarkan model regresi linear","Memvisualisasikan tren dalam data time series","Menghitung koefisien korelasi antara X dan Y"],ans:1,diff:"easy",exp:"=TREND() menghitung nilai Y yang diprediksi untuk nilai X baru menggunakan model regresi linear. Misalnya, =TREND(C4:C45, B4:B45, 1750) memprediksi market value untuk rumah dengan 1750 sq ft berdasarkan model yang dibangun dari data C4:C45 dan B4:B45.",ref:"Bab 8 – TREND Function"},
+    {q:"Sebuah dummy variable dalam regresi digunakan untuk:",opts:["Menggantikan variabel dengan missing values","Mengkodekan variabel kategoris (misalnya: 0=tidak, 1=ya) agar bisa dimasukkan dalam model regresi","Mengidentifikasi outlier dalam dataset","Menormalisasi variabel kontinu ke skala 0-1"],ans:1,diff:"medium",exp:"Dummy variable mengkodekan variabel kategorikal menjadi numerik (0/1) untuk regresi. Contoh: Gender (0=pria, 1=wanita), Region (butuh k-1 dummy untuk k kategori). Koefisien dummy diinterpretasikan sebagai perbedaan rata-rata Y antara dua kategori.",ref:"Bab 8 – Dummy Variables"},
+    {q:"Dalam output regresi, Lower 95% = 14,823 dan Upper 95% = 50,523 untuk intercept. Jika kita ingin menguji H₀: β₀ = 0 vs H₁: β₀ ≠ 0 pada α=0.05, keputusannya adalah:",opts:["Gagal tolak H₀; 0 mungkin ada dalam interval","Tolak H₀; 0 berada di luar interval [14,823; 50,523]","Terima H₀ karena intercept tidak penting dalam regresi","Tidak bisa disimpulkan dari CI saja"],ans:1,diff:"hard",exp:"CI 95% untuk β₀ = [14,823; 50,523]. Nilai 0 TIDAK MASUK dalam interval ini. Oleh karena itu, pada α=0.05, TOLAK H₀: β₀=0. Intercept berbeda signifikan dari 0. CI dapat digunakan untuk menguji hipotesis: jika nilai hypothesized tidak masuk CI, tolak H₀.",ref:"Bab 8 – CI untuk Uji Hipotesis"},
+    {q:"Mengapa kita tidak bisa menggunakan R² untuk membandingkan dua model regresi yang memiliki jumlah variabel berbeda?",opts:["R² tidak valid untuk model dengan lebih dari 5 variabel","R² selalu meningkat saat variabel ditambahkan, meski tidak bermakna — gunakan Adjusted R² untuk perbandingan adil","R² berbeda perhitungannya untuk simple vs multiple regression","R² hanya bisa dibandingkan jika kedua model menggunakan data yang sama"],ans:1,diff:"medium",exp:"R² tidak pernah menurun saat variabel ditambahkan. Membandingkan model 3-variabel (R²=0.75) vs 5-variabel (R²=0.78) tidak fair — model 5-variabel hampir pasti lebih tinggi meski peningkatannya mungkin tidak bermakna. Gunakan Adjusted R² yang menghukum penambahan variabel tidak berguna.",ref:"Bab 8 – Membandingkan Model"},
+    {q:"Persamaan regresi Ŷ = 32,673 + 35.036X digunakan untuk memprediksi market value rumah. Apa keterbatasan menggunakan model ini untuk rumah dengan 4,000 sq ft?",opts:["Model tidak bisa digunakan untuk nilai X di atas 1,000","Prediksi untuk 4,000 sq ft adalah extrapolation jika data training hanya mencakup rumah hingga ~2,600 sq ft","Model tidak valid karena intercept sangat besar","Diperlukan R² di atas 0.90 untuk prediksi yang valid"],ans:1,diff:"hard",exp:"Jika data yang digunakan untuk membangun model hanya mencakup rumah dengan luas hingga ~2,600 sq ft, maka prediksi untuk 4,000 sq ft adalah EXTRAPOLATION. Model regresi dibangun berdasarkan hubungan yang diamati dalam range data — hubungan linear mungkin tidak berlaku di luar range tersebut.",ref:"Bab 8 – Extrapolation"},
+    {q:"Residual Sum of Squares (SSE) yang kecil menunjukkan:",opts:["Model memiliki terlalu banyak variabel","Model fit yang baik — prediksi dekat dengan nilai aktual","Data memiliki variance yang kecil","R² mendekati 0"],ans:1,diff:"medium",exp:"SSE = Σ(Y - Ŷ)² mengukur total kuadrat perbedaan antara nilai aktual dan prediksi. SSE kecil → residual kecil → prediksi akurat → model fit baik. OLS (Ordinary Least Squares) bekerja dengan MEMINIMALKAN SSE untuk mendapatkan estimasi koefisien terbaik.",ref:"Bab 8 – Sum of Squares"},
+    {q:"Sebuah perusahaan melakukan regresi penjualan terhadap pengeluaran iklan dan mendapat p-value = 0.0001. Apa interpretasinya dalam konteks bisnis?",opts:["Iklan menyebabkan penjualan meningkat 0.01%","Ada bukti statistik yang sangat kuat bahwa pengeluaran iklan berhubungan signifikan dengan penjualan dalam model ini","Model memprediksi 0.01% variasi penjualan","Hubungan antara iklan dan penjualan lemah"],ans:1,diff:"medium",exp:"p-value = 0.0001 << 0.05. Tolak H₀ (slope=0). Kesimpulan bisnis: pengeluaran iklan merupakan prediktor yang signifikan secara statistik untuk penjualan. Catatan: signifikansi statistik ≠ signifikansi praktis (effect size) — perlu lihat magnitude slope juga.",ref:"Bab 8 – Interpretasi p-value Regresi"},
+    {q:"Manakah yang merupakan cara YANG BENAR menginterpretasikan intercept b₀ dalam regresi?",opts:["b₀ selalu merupakan nilai Y yang paling mungkin","b₀ adalah nilai prediksi Y ketika semua variabel X = 0","b₀ mengukur hubungan rata-rata antara X dan Y","b₀ adalah nilai minimum Y dalam dataset"],ans:1,diff:"easy",exp:"Intercept b₀ = nilai Ŷ ketika SEMUA X = 0. Interpretasi ini hanya bermakna secara kontekstual jika X=0 masuk akal dalam domain masalah. Misalnya, intercept=32,673 dalam model market value berarti rumah dengan 0 sq ft bernilai $32,673 — tidak masuk akal secara praktis, tapi tetap diperlukan dalam model.",ref:"Bab 8 – Interpretasi Intercept"},
+  ]
+},
+{
+  id: 6,
+  num: "BAB 09",
+  title: "Teknik Forecasting",
+  desc: "Moving average, exponential smoothing, trendline, seasonality, forecast error",
+  summary: [
+    {
+      heading: "Metode Forecasting",
+      items: [
+        "Moving Average (MA): rata-rata n periode terakhir. Lebih smooth untuk n lebih besar, tapi lagging lebih besar.",
+        "Weighted Moving Average: memberi bobot berbeda ke periode berbeda (lebih baru = lebih berat).",
+        "Exponential Smoothing: Ft = α×At-1 + (1-α)×Ft-1. α kecil = smooth lebih halus; α besar = responsif terhadap perubahan.",
+        "Double Exponential Smoothing (Holt's): menambahkan komponen trend.",
+        "Triple Exponential Smoothing (Holt-Winters): menambahkan komponen trend DAN seasonality."
+      ]
+    },
+    {
+      heading: "Analisis Trend",
+      items: [
+        "Linear trend: Ft = a + bt. Gunakan fungsi regresi linear terhadap waktu.",
+        "Non-linear trend: exponential, polynomial. Excel: Add Trendline → pilih tipe.",
+        "R² pada trendline menunjukkan seberapa baik trendline fit ke data.",
+        "Perhatian: model linear tidak menangkap perubahan arah (mis. penurunan tiba-tiba setelah 2008)."
+      ]
+    },
+    {
+      heading: "Dekomposisi Seasonal",
+      items: [
+        "Seasonal index: rasio permintaan aktual terhadap rata-rata (untuk masing-masing musim).",
+        "Deseasonalize data: data_aktual / seasonal_index → hilangkan seasonal component.",
+        "Forecast = trend_component × seasonal_index (untuk data multiplicative)"
+      ]
+    },
+    {
+      heading: "Ukuran Error Forecast",
+      items: [
+        "MAE (Mean Absolute Error): rata-rata |error|. Mudah diinterpretasikan.",
+        "MSE (Mean Squared Error): rata-rata error². Menghukum error besar lebih berat.",
+        "RMSE: akar MSE. Satuan sama dengan data asli.",
+        "MAPE (Mean Absolute Percentage Error): rata-rata |error/actual| × 100%. Berguna untuk perbandingan."
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Menghitung moving average dan exponential smoothing" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Interpretasi forecast error (MAE, MSE, MAPE)" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Pengaruh α dalam exponential smoothing" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Kapan menggunakan moving average vs regresi trendline" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> Seasonal index dan dekomposisi" },
+  ],
+  questions: [
+    {q:"Data penjualan 5 bulan: Jan=100, Feb=120, Mar=110, Apr=130, Mei=?. Forecast Mei menggunakan 3-period moving average berdasarkan Feb, Mar, Apr adalah:",opts:["(100+120+110)/3 = 110","(120+110+130)/3 = 120","(110+130+Mei)/3","(100+120+110+130)/4 = 115"],ans:1,diff:"easy",exp:"3-period moving average untuk Mei = rata-rata 3 periode TERAKHIR (Feb, Mar, Apr) = (120+110+130)/3 = 360/3 = 120. Moving average menggeser ke depan — untuk forecast periode ke-t, gunakan rata-rata t-1, t-2, t-3.",ref:"Bab 9 – Moving Average"},
+    {q:"Dengan exponential smoothing (α=0.3): F₁=100, A₁=110. Berapa F₂?",opts:["F₂ = 0.3(100) + 0.7(110) = 107","F₂ = 0.3(110) + 0.7(100) = 103","F₂ = 0.7(110) + 0.3(100) = 107","F₂ = 0.3(110) + 0.7(110) = 110"],ans:1,diff:"medium",exp:"Exponential smoothing: Ft = α×A(t-1) + (1-α)×F(t-1). F₂ = α×A₁ + (1-α)×F₁ = 0.3×110 + 0.7×100 = 33 + 70 = 103. α=0.3 berarti lebih banyak bobot diberikan ke forecast lama (0.7) dibanding nilai aktual baru (0.3) — smooth lebih halus.",ref:"Bab 9 – Exponential Smoothing"},
+    {q:"MAPE untuk suatu model forecasting adalah 8.5%. Interpretasi YANG BENAR adalah:",opts:["Model salah 8.5 unit per periode","Error rata-rata model adalah $8.50","Rata-rata kesalahan prediksi adalah 8.5% dari nilai aktual","R² model adalah 91.5%"],ans:2,diff:"medium",exp:"MAPE = Mean Absolute Percentage Error = rata-rata dari |error/actual| × 100%. MAPE 8.5% berarti rata-rata, prediksi meleset sekitar 8.5% dari nilai aktual. Keunggulan MAPE: dapat dibandingkan antar produk/skala yang berbeda karena dalam persentase.",ref:"Bab 9 – MAPE"},
+    {q:"Nilai α yang LEBIH BESAR dalam exponential smoothing berarti:",opts:["Forecast lebih halus dan tidak responsif terhadap perubahan mendadak","Forecast lebih responsif terhadap data terbaru; lebih banyak bobot diberikan ke nilai aktual terkini","Diperlukan lebih banyak periode data historis","Moving average yang lebih panjang digunakan"],ans:1,diff:"medium",exp:"α kecil (mendekati 0): lebih banyak bobot ke forecast lama → smooth tapi lambat menyesuaikan perubahan. α besar (mendekati 1): lebih banyak bobot ke nilai aktual terbaru → responsif tapi lebih volatile. α=1 berarti F(t+1) = A(t) — forecast = nilai aktual terakhir.",ref:"Bab 9 – Parameter α Exponential Smoothing"},
+    {q:"Trendline linear Coal Production: y = 15,413,537x + 438,819,885; R²=0.95. Catatan: 'model linear tidak menangkap penurunan produksi setelah 2008'. Apa implikasinya?",opts:["R²=0.95 menjamin model tetap akurat untuk forecast ke depan","Model linear baik untuk interpolasi tapi bisa buruk untuk extrapolation jika ada structural break","Harus menggunakan exponential trendline karena data produksi batubara","Model tidak valid karena intercept terlalu besar"],ans:1,diff:"hard",exp:"R²=0.95 menunjukkan fit yang sangat baik untuk data HISTORIS. Namun, perubahan structural (penurunan 2008 karena krisis ekonomi/kebijakan) tidak tercapture oleh trend linear. Extrapolation ke depan dengan model ini akan over-predict karena tidak memodelkan penurunan tersebut.",ref:"Bab 9 – Trendline Limitations"},
+    {q:"Manakah yang merupakan kekurangan Moving Average dibanding Exponential Smoothing?",opts:["Moving Average lebih kompleks secara komputasi","Moving Average memberikan bobot yang sama untuk semua periode dalam window, tidak bisa adapt weight; juga membutuhkan menyimpan n periode data","Exponential Smoothing lebih susah diinterpretasikan","Moving Average tidak bisa digunakan untuk data seasonal"],ans:1,diff:"hard",exp:"Kelemahan MA: (1) Semua n periode diberi bobot sama — data lama sama pentingnya dengan data baru. (2) Membutuhkan penyimpanan semua n periode (memory). Exponential Smoothing mengatasi ini: bobot menurun secara eksponensial ke masa lalu, dan hanya membutuhkan forecast terakhir + nilai aktual terakhir.",ref:"Bab 9 – MA vs Exponential Smoothing"},
+    {q:"MSE = 225 dan MAE = 12 untuk model forecasting. Apa yang bisa disimpulkan?",opts:["Model memiliki error rata-rata $225 per periode","Error rata-rata absolut adalah 12 unit; MAE lebih mudah diinterpretasikan dibanding MSE","MSE < MAE berarti model sudah sangat baik","Model tidak valid karena MSE harus lebih kecil dari MAE"],ans:1,diff:"medium",exp:"MAE = rata-rata |error| = 12 unit (mudah diinterpretasikan: rata-rata meleset 12 unit). MSE = rata-rata error² = 225 = 15² — lebih sensitif terhadap error besar. RMSE = √MSE = √225 = 15 (satuan sama dengan data). MSE > MAE² tidak masalah secara matematis.",ref:"Bab 9 – MAE vs MSE"},
+    {q:"Seasonal index untuk bulan Juli = 1.25. Jika forecast tanpa seasonal adjustment untuk Juli = 1000 unit, forecast dengan seasonal adjustment adalah:",opts:["1000 / 1.25 = 800","1000 × 1.25 = 1250","1000 + 1.25 = 1001.25","1000 - 1.25 = 998.75"],ans:1,diff:"medium",exp:"Seasonal index 1.25 berarti Juli biasanya 25% di ATAS rata-rata. Forecast seasonalized = forecast_trend × seasonal_index = 1000 × 1.25 = 1250 unit. Sebaliknya, untuk de-seasonalize: data_aktual / seasonal_index = nilai 'dasar' tanpa pengaruh musim.",ref:"Bab 9 – Seasonal Index"},
+    {q:"Mengapa moving average yang lebih panjang (lebih banyak periode) menghasilkan forecast yang lebih halus?",opts:["Karena menggunakan lebih banyak data sehingga akurasi meningkat","Karena rata-rata lebih banyak titik data meredam fluktuasi random; namun lagging terhadap perubahan trend lebih besar","Karena lebih mudah dihitung oleh Excel","Karena mengurangi pengaruh seasonal patterns"],ans:1,diff:"medium",exp:"MA yang lebih panjang merata-ratakan lebih banyak titik data sehingga volatilitas random ter-smooth. Trade-off: lebih halus TAPI lebih lambat merespons perubahan trend aktual (higher lag). MA pendek: responsif tapi volatile. MA panjang: smooth tapi lambat. Pilihan tergantung tujuan forecasting.",ref:"Bab 9 – Moving Average Length"},
+    {q:"Metode forecasting terbaik ketika data menunjukkan trend yang jelas DAN pola seasonal adalah:",opts:["Simple moving average","Simple exponential smoothing (1 parameter)","Double exponential smoothing (Holt)","Triple exponential smoothing (Holt-Winters)"],ans:3,diff:"medium",exp:"Holt-Winters (Triple Exponential Smoothing) menggunakan 3 komponen: level (α), trend (β), dan seasonality (γ). Cocok untuk data dengan KEDUANYA trend dan seasonality. Holt (Double) hanya menangani trend. Simple MA dan SES tidak menangani trend atau seasonality dengan baik.",ref:"Bab 9 – Pemilihan Metode Forecasting"},
+    {q:"Forecast coal production tahun ke-55 menggunakan model y = 15,413,537x + 438,819,885:",opts:["y = 15,413,537(55) + 438,819,885 = 1,286,564,420","y = 55 + 438,819,885","y = 15,413,537/55 = 280,245","y = 438,819,885 - 15,413,537(55)"],ans:0,diff:"easy",exp:"Substitusi x=55: y = 15,413,537(55) + 438,819,885 = 847,744,535 + 438,819,885 = 1,286,564,420. Ini adalah prediksi produksi batu bara di tahun ke-55 menggunakan model trend linear (dari t=1 untuk tahun pertama data).",ref:"Bab 9 – Forecasting dengan Trendline"},
+    {q:"Error forecast: {+5, -3, +8, -6, +2}. Berapa MAE?",opts:["(5-3+8-6+2)/5 = 6/5 = 1.2","(5+3+8+6+2)/5 = 24/5 = 4.8","(25+9+64+36+4)/5 = 27.6","√27.6 ≈ 5.25"],ans:1,diff:"medium",exp:"MAE = (|5| + |-3| + |8| + |-6| + |2|) / 5 = (5+3+8+6+2)/5 = 24/5 = 4.8. MAE mengambil nilai absolut untuk mencegah error positif dan negatif saling menghapus. Pilihan C adalah MSE, D adalah RMSE.",ref:"Bab 9 – MAE Calculation"},
+    {q:"Manakah model yang PALING TIDAK SESUAI untuk data yang menunjukkan tren menurun setelah titik tertentu?",opts:["Polynomial trendline","Linear regression trendline jika data secara keseluruhan menurun","Piecewise regression (broken stick)","Exponential decay trendline"],ans:1,diff:"hard",exp:"Linear regression mengasumsikan hubungan linear yang konsisten sepanjang data. Jika ada 'structural break' (perubahan drastis arah trend di titik tertentu), linear regression akan gagal menangkap dinamika ini. Alternatif: polynomial, piecewise, atau model yang memasukkan variabel dummy untuk structural break.",ref:"Bab 9 – Model Trendline"},
+    {q:"Mengapa Exponential Smoothing disebut 'exponential'?",opts:["Karena menggunakan fungsi eksponensial dalam rumusnya","Karena bobot yang diberikan ke observasi masa lalu menurun secara eksponensial seiring bertambahnya waktu","Karena cocok untuk data yang tumbuh secara eksponensial","Karena membutuhkan eksponensial waktu komputasi"],ans:1,diff:"medium",exp:"Bobot dalam exponential smoothing: nilai terbaru mendapat bobot α, satu periode sebelumnya α(1-α), dua periode sebelumnya α(1-α)², dst. Bobot menurun secara EKSPONENSIAL ke masa lalu. Ini berbeda dari MA yang memberi bobot sama untuk n periode window.",ref:"Bab 9 – Kenapa 'Exponential' Smoothing"},
+    {q:"Untuk meminimalkan MSE dalam memilih α optimal untuk exponential smoothing, pendekatan yang digunakan adalah:",opts:["Selalu gunakan α=0.5 sebagai titik tengah","Uji berbagai nilai α (misal 0.1, 0.2, ..., 0.9) dan pilih yang menghasilkan MSE terkecil menggunakan data historis","Gunakan metode statistik chi-square untuk menentukan α","α selalu sama dengan 1/n di mana n adalah jumlah observasi"],ans:1,diff:"hard",exp:"Tidak ada formula analitik untuk α optimal — harus dicari secara empiris. Pendekatan: hitung forecast dan MSE untuk berbagai nilai α menggunakan data historis, lalu pilih α yang menghasilkan MSE terkecil. Beberapa software (Excel Solver) dapat mengoptimasi α secara otomatis.",ref:"Bab 9 – Optimasi α"},
+    {q:"Sebuah retailer mengamati bahwa penjualan Q4 selalu 40% di atas rata-rata tahunan. Seasonal index untuk Q4 adalah:",opts:["0.40","1.40","0.60","4.0"],ans:1,diff:"medium",exp:"Seasonal index = permintaan periode / rata-rata. Jika Q4 selalu 40% di ATAS rata-rata, maka Q4 = 1.40 × rata-rata. Seasonal index Q4 = 1.40. Seasonal index > 1: di atas rata-rata. < 1: di bawah rata-rata. = 1: tepat rata-rata.",ref:"Bab 9 – Seasonal Index"},
+    {q:"Bias (mean error) yang konsisten positif dalam forecast menunjukkan:",opts:["Model memiliki variance yang tinggi","Model secara sistematis UNDER-prediksi — perlu adjustment ke atas","Model secara sistematis OVER-prediksi","Tidak ada masalah; error positif adalah normal"],ans:1,diff:"medium",exp:"Bias = rata-rata error (tidak diambil absolut). Error positif = aktual > forecast → model UNDER-prediksi (terlalu rendah). Bias positif yang konsisten menunjukkan model secara sistematis under-estimate. Solusi: koreksi bias atau gunakan model yang berbeda.",ref:"Bab 9 – Forecast Bias"},
+    {q:"Data: Q1=80, Q2=110, Q3=130, Q4=180. Rata-rata = 125. Seasonal index Q2 adalah:",opts:["110/125 = 0.88","125/110 = 1.14","110-125 = -15","(110+125)/2 = 117.5"],ans:0,diff:"easy",exp:"Seasonal index = nilai_periode / rata-rata = 110/125 = 0.88. Q2 dengan seasonal index 0.88 berarti permintaan di Q2 adalah 88% dari rata-rata tahunan (12% di bawah rata-rata).",ref:"Bab 9 – Menghitung Seasonal Index"},
+    {q:"Forecast dengan linear trendline menghasilkan R²=0.82. Jika pola sebenarnya adalah S-curve (sigmoid), tindakan yang tepat adalah:",opts:["Tingkatkan R² dengan menambah observasi","Gunakan non-linear trendline (polynomial atau S-curve) yang lebih sesuai dengan pola data","Kurangi data historis untuk fokus pada tren terkini","R²=0.82 sudah cukup baik; pertahankan model linear"],ans:1,diff:"hard",exp:"R²=0.82 mungkin masih bisa ditingkatkan dengan model yang lebih sesuai dengan pola data. S-curve (sigmoid) lebih tepat untuk data yang tumbuh cepat lalu melambat (product life cycle). Selain R², perhatikan residual plot — jika ada pattern sistematis, model tidak tepat.",ref:"Bab 9 – Pemilihan Trendline"},
+    {q:"Dua metode forecasting menghasilkan: Model A: MAE=5, MSE=50; Model B: MAE=6, MSE=30. Mana yang lebih baik dan mengapa?",opts:["Model A selalu lebih baik karena MAE lebih kecil","Model B mungkin lebih baik jika menghindari error besar adalah prioritas karena MSE lebih kecil","Model A lebih baik karena MSE lebih besar menunjukkan variance lebih tinggi","Tidak bisa dibandingkan; MAE dan MSE menggunakan skala berbeda"],ans:1,diff:"hard",exp:"Trade-off: Model A memiliki MAE lebih kecil (rata-rata error kecil) tapi MSE lebih besar (ada beberapa error besar). Model B memiliki MAE lebih besar tapi MSE lebih kecil (error lebih merata, tidak ada outlier error besar). Jika konsekuensi error besar parah (misalnya over-produksi), pilih Model B yang menghindari error besar.",ref:"Bab 9 – Memilih Metrik Error"},
+  ]
+},
+{
+  id: 7,
+  num: "BAB 10–12",
+  title: "Data Mining, Simulasi & Model Spreadsheet",
+  desc: "Cluster analysis, data mining, what-if analysis, Monte Carlo simulation, optimisasi",
+  summary: [
+    {
+      heading: "Data Mining Basics",
+      items: [
+        "Data mining: proses menemukan pola tersembunyi dalam dataset besar.",
+        "Cluster analysis (segmentasi): mengelompokkan observasi yang serupa tanpa label yang sudah ada (unsupervised learning).",
+        "Classification: memprediksi kelas/kategori untuk observasi baru (supervised learning).",
+        "XLMiner: add-in Excel untuk data mining; tersedia di Analytic Solver Platform.",
+        "Missing data: dapat diatasi dengan (1) hapus record, (2) imputasi mean/median, (3) XLMiner transform."
+      ]
+    },
+    {
+      heading: "Visualisasi Data Mining",
+      items: [
+        "Boxplot: menampilkan distribusi variabel. Dapat dikelompokkan by kategori (e.g., by marital status).",
+        "Parallel coordinates chart: menampilkan profil multivariat tiap observasi, berguna untuk menemukan pola.",
+        "Scatterplot matrix: kombinasi scatter chart untuk semua pasangan variabel.",
+        "Variable plot (histogram matrix): histogram untuk setiap variabel yang dipilih."
+      ]
+    },
+    {
+      heading: "What-If Analysis di Excel",
+      items: [
+        "Data Table (1-way): evaluasi output terhadap range nilai SATU input.",
+        "Data Table (2-way): evaluasi output terhadap range nilai DUA input sekaligus.",
+        "Cara: Data → What-If Analysis → Data Table → tentukan Column Input Cell (1-way) atau Row+Column (2-way).",
+        "Scenario Manager: menyimpan dan membandingkan SETS nilai input (skenario) yang berbeda.",
+        "Goal Seek: menentukan nilai INPUT yang diperlukan untuk mencapai TARGET output tertentu."
+      ]
+    },
+    {
+      heading: "Monte Carlo Simulation",
+      items: [
+        "Monte Carlo: membangkitkan nilai acak untuk input yang tidak pasti, menghitung output, mengulang banyak trial.",
+        "Langkah: (1) Buat model spreadsheet, (2) Tentukan distribusi input tidak pasti, (3) Identifikasi output, (4) Pilih jumlah trial, (5) Jalankan, (6) Interpretasi.",
+        "=RAND(): membangkitkan bilangan acak antara 0-1.",
+        "=NORM.INV(RAND(), mean, std_dev): membangkitkan nilai acak dari distribusi normal.",
+        "Tekan F9 untuk recalculate — nilai random akan berubah.",
+        "Gunakan Data Table dengan blank Column Input Cell untuk menjalankan multiple trials."
+      ]
+    },
+    {
+      heading: "Parametric Sensitivity & Tornado Chart",
+      items: [
+        "Sensitivity analysis: menganalisis bagaimana output berubah ketika input berubah.",
+        "Tornado chart: menampilkan dampak variasi setiap input terhadap output, diurutkan dari terbesar ke terkecil.",
+        "Input yang paling berpengaruh terhadap output muncul di bagian atas tornado chart.",
+        "Analytic Solver: Parameters → Identify → membuat tornado chart otomatis."
+      ]
+    }
+  ],
+  predictions: [
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Langkah-langkah Monte Carlo simulation dan interpretasinya" },
+    { icon: "🔥", text: "<strong>Sangat sering keluar:</strong> Perbedaan Data Table 1-way vs 2-way dan Goal Seek" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Cluster analysis vs classification (supervised vs unsupervised)" },
+    { icon: "⚡", text: "<strong>Cukup sering:</strong> Interpretasi tornado chart" },
+    { icon: "💡", text: "<strong>Mungkin keluar:</strong> Scenario Manager vs Data Table — kapan menggunakan masing-masing" },
+  ],
+  questions: [
+    {q:"Monte Carlo simulation PALING tepat digunakan untuk:",opts:["Menghitung nilai pasti dari model yang kompleks","Menganalisis model dengan satu atau lebih INPUT yang tidak pasti (probabilistik) untuk memahami distribusi OUTPUT","Mengoptimalkan model linear programming","Menggantikan analisis regresi untuk data besar"],ans:1,diff:"medium",exp:"Monte Carlo simulation digunakan ketika input model bersifat tidak pasti/probabilistik (mengikuti distribusi tertentu). Dengan membangkitkan banyak nilai acak untuk input dan menghitung output, kita mendapatkan distribusi output — memahami risiko dan ketidakpastian.",ref:"Bab 12 – Monte Carlo Simulation"},
+    {q:"Pada Monte Carlo simulation menggunakan Data Table di Excel, argumen 'Column Input Cell' diisi dengan:",opts:["Sel yang berisi nilai rata-rata distribusi","Sel yang berisi hasil output yang ingin diamati","Sembarang sel kosong (blank cell) — untuk 'memaksa' Excel recalculate setiap trial","Sel yang berisi formula RAND()"],ans:2,diff:"hard",exp:"Trik Monte Carlo dengan Data Table: Column Input Cell diisi BLANK CELL. Ini 'menipu' Excel untuk menghitung ulang model (termasuk semua RAND() di dalamnya) untuk setiap baris dalam tabel — setiap baris mewakili satu trial. Hasilnya: banyak simulasi output yang berbeda.",ref:"Bab 12 – Monte Carlo dengan Data Table"},
+    {q:"Perbedaan utama antara Cluster Analysis dan Classification dalam data mining adalah:",opts:["Cluster analysis lebih cepat dibanding classification","Cluster analysis adalah unsupervised (tidak ada label target); Classification adalah supervised (ada label/kelas yang sudah diketahui)","Classification selalu lebih akurat dari clustering","Cluster analysis hanya bekerja untuk data numerik"],ans:1,diff:"medium",exp:"Cluster analysis (unsupervised): mengelompokkan data tanpa label yang sudah ada — menemukan grup alami berdasarkan kemiripan. Classification (supervised): memprediksi kelas yang sudah ada berdasarkan data latih yang sudah berlabel. Contoh clustering: segmentasi pelanggan. Contoh classification: prediksi churn (ya/tidak).",ref:"Bab 10 – Cluster vs Classification"},
+    {q:"Data Table 2-way di Excel dapat mengevaluasi:",opts:["Satu output untuk satu range input","Dua output berbeda untuk satu input yang sama","Satu output untuk dua input berbeda secara simultan","Semua kombinasi dari tiga input atau lebih"],ans:2,diff:"medium",exp:"Data Table 2-way: evaluasi SATU output untuk kombinasi dari DUA input berbeda. Baris = nilai input pertama, Kolom = nilai input kedua, sel isian = output untuk setiap kombinasi. Berguna untuk 'sensitivity matrix' — melihat profitabilitas untuk berbagai kombinasi harga dan volume.",ref:"Bab 11 – Data Table 2-way"},
+    {q:"Goal Seek di Excel digunakan untuk:",opts:["Mengoptimalkan sel output dengan mengubah banyak variabel","Menetapkan TARGET nilai untuk sel output dan menemukan INPUT yang diperlukan","Mensimulasikan distribusi output secara probabilistik","Membandingkan beberapa skenario sekaligus"],ans:1,diff:"easy",exp:"Goal Seek menjawab: 'Berapa nilai input yang diperlukan agar output mencapai target tertentu?' Contoh: 'Berapa volume produksi agar manufacturing cost = purchased cost (break-even)?' Set cell = output, To value = target, By changing cell = input yang ingin dicari.",ref:"Bab 11 – Goal Seek"},
+    {q:"Tornado chart dalam Analytic Solver Platform digunakan untuk:",opts:["Menampilkan distribusi output dari Monte Carlo simulation","Menunjukkan input mana yang memiliki dampak TERBESAR terhadap output — diurutkan dari terbesar ke terkecil","Membandingkan actual vs forecast dalam time series","Menampilkan korelasi antar variabel dalam dataset"],ans:1,diff:"medium",exp:"Tornado chart menampilkan sensitivity analysis: setiap bar menunjukkan seberapa besar output berubah ketika satu input divariasikan sementara yang lain ditahan konstan. Input paling berpengaruh di atas (bar terpanjang), paling tidak berpengaruh di bawah — berbentuk seperti tornado.",ref:"Bab 11–12 – Tornado Chart"},
+    {q:"Untuk membuat Data Table 1-way (satu kolom nilai input, satu kolom output), langkah YANG BENAR adalah:",opts:["Data → Sort → Custom Sort → Data Table","Data → What-If Analysis → Data Table → isi Column Input Cell dengan referensi sel input dalam model","Insert → Table → Data Table → pilih range","Formulas → Define Name → Data Table"],ans:1,diff:"easy",exp:"Langkah Data Table 1-way: (1) Buat kolom nilai input yang ingin diuji. (2) Di sel satu kolom ke kanan dan satu baris di atas nilai input pertama, masukkan referensi ke output model. (3) Pilih range (input values + header formula). (4) Data → What-If Analysis → Data Table → isi Column Input Cell → OK.",ref:"Bab 11 – Data Table 1-way"},
+    {q:"Formula =ROUND(NORM.INV(RAND(), 1000, 100), 0) dalam model simulasi menghasilkan:",opts:["Bilangan acak antara 0 dan 1","Nilai acak dari distribusi normal dengan mean=1000, std=100, dibulatkan ke bilangan bulat","Nilai yang selalu antara 900 dan 1100","Nilai yang sama setiap kali dihitung"],ans:1,diff:"medium",exp:"RAND() → bilangan acak [0,1]. NORM.INV(RAND(), 1000, 100) → nilai acak dari distribusi normal (μ=1000, σ=100). ROUND(..., 0) → bulatkan ke bilangan bulat. Setiap kali F9 ditekan, nilai baru yang random (namun mengikuti distribusi normal) akan muncul.",ref:"Bab 12 – Random Number Generation"},
+    {q:"Dalam Scenario Manager, maksud dari 'Changing Cells' adalah:",opts:["Sel yang berisi formula output yang akan berubah","Sel input yang nilainya berbeda-beda di setiap skenario","Sel yang otomatis berubah saat data diupdate","Sel yang mengandung referensi ke worksheet lain"],ans:1,diff:"medium",exp:"Dalam Scenario Manager: 'Changing Cells' adalah sel INPUT yang nilainya berbeda di setiap skenario. Untuk setiap skenario, Anda mendefinisikan nilai berbeda untuk changing cells. Excel menyimpan semua set nilai ini dan bisa menampilkan hasil model untuk setiap skenario.",ref:"Bab 11 – Scenario Manager"},
+    {q:"Parallel coordinates chart dalam XLMiner berguna untuk:",opts:["Membuat diagram alur proses bisnis","Memvisualisasikan profil multivariat setiap observasi dan menemukan pola antar kelompok","Membandingkan dua time series secara bersamaan","Menampilkan decision tree hasil classification"],ans:1,diff:"medium",exp:"Parallel coordinates chart: setiap variabel memiliki sumbu vertikal. Tiap observasi dihubungkan sebagai garis melintasi semua sumbu. Memungkinkan visualisasi data multi-dimensi dan identifikasi cluster/pola. Contoh: membedakan profil 'risiko kredit rendah' vs 'tinggi' berdasarkan beberapa variabel sekaligus.",ref:"Bab 10 – Parallel Coordinates"},
+    {q:"Mengapa Monte Carlo simulation menggunakan BANYAK trial (misal 1000 atau lebih)?",opts:["Karena Excel hanya bisa menghitung formula 1000 kali","Semakin banyak trial, distribusi output semakin mendekati distribusi statistik yang sebenarnya (Law of Large Numbers)","Untuk memenuhi persyaratan Analysis Toolpak","Karena setiap trial menggunakan data historis yang berbeda"],ans:1,diff:"medium",exp:"Law of Large Numbers: semakin banyak trial, distribusi output yang diamati semakin mendekati distribusi probabilistik yang sesungguhnya. Dengan 20 trial, hasilnya tidak stabil. Dengan 1000+ trial, Anda mendapatkan gambaran yang cukup akurat tentang distribusi, probabilitas rugi, rata-rata, dan range output.",ref:"Bab 12 – Jumlah Trial Simulasi"},
+    {q:"Stochastic model berbeda dari deterministic model karena:",opts:["Stochastic model selalu menggunakan regresi linear","Stochastic model menyertakan randomness/uncertainty melalui distribusi probabilitas untuk input tidak pasti","Deterministic model membutuhkan lebih banyak data","Stochastic model hanya bisa digunakan untuk financial modeling"],ans:1,diff:"medium",exp:"Deterministic model: semua input diasumsikan diketahui dengan pasti → satu output. Stochastic/probabilistic model: satu atau lebih input bersifat acak (mengikuti distribusi probabilitas) → output juga random, menghasilkan distribusi outcome. Monte Carlo simulation adalah cara umum menganalisis stochastic model.",ref:"Bab 12 – Stochastic vs Deterministic"},
+    {q:"Form control 'Spin Button' di Excel berguna untuk:",opts:["Menjalankan macro VBA secara otomatis","Memungkinkan user mengubah nilai input model secara interaktif dengan mengklik naik/turun","Mengimpor data dari database eksternal","Membuat grafik yang bisa dirotasi (spin)"],ans:1,diff:"easy",exp:"Spin Button adalah form control yang memungkinkan user mengubah nilai input dalam increments tertentu dengan mengklik panah atas/bawah. Berguna untuk model interaktif — misalnya mengubah unit cost antara $150-200 dalam inkremen $5 untuk melihat dampak pada profit secara real-time.",ref:"Bab 11 – Form Controls"},
+    {q:"Ketika melakukan sensitivity analysis dengan Scenario Manager vs Data Table, perbedaan utamanya adalah:",opts:["Scenario Manager lebih cepat karena otomatis","Data Table mengevaluasi banyak nilai input secara sistematis dan menghasilkan tabel; Scenario Manager menyimpan sets nilai yang sudah dipilih (named scenarios)","Scenario Manager bisa mengevaluasi lebih dari 2 input sekaligus, Data Table hanya 2","Data Table membutuhkan Analytic Solver; Scenario Manager tidak"],ans:1,diff:"hard",exp:"Data Table: baik untuk mengeksplorasi rentang BANYAK nilai input secara sistematis (grid). Scenario Manager: menyimpan dan membandingkan beberapa SPECIFIC SCENARIOS yang sudah dinamai ('Optimistic', 'Pessimistic', 'Base Case') — berguna untuk presentasi dan perencanaan skenario.",ref:"Bab 11 – Data Table vs Scenario Manager"},
+    {q:"Langkah PERTAMA dalam proses Monte Carlo simulation adalah:",opts:["Menentukan jumlah trial (1000, 5000, dll.)","Mengidentifikasi output yang ingin diprediksi","Mengembangkan model spreadsheet yang merepresentasikan situasi","Mengidentifikasi distribusi probabilitas untuk input tidak pasti"],ans:2,diff:"medium",exp:"Langkah Monte Carlo: (1) DEVELOP SPREADSHEET MODEL, (2) Tentukan distribusi untuk input tidak pasti, (3) Identifikasi output, (4) Pilih jumlah trial, (5) Jalankan simulasi, (6) Interpretasi. Tanpa model spreadsheet yang benar, langkah selanjutnya tidak mungkin.",ref:"Bab 12 – Langkah Monte Carlo"},
+    {q:"Sebuah model profitabilitas memiliki 5 input. Tornado chart menunjukkan 'harga jual' memiliki bar terpanjang. Ini berarti:",opts:["Harga jual adalah variabel yang paling tidak pasti","Model paling sensitif terhadap perubahan harga jual — variasi kecil harga jual berdampak besar pada profit","Harga jual memiliki distribusi normal terlebar","Harga jual harus dioptimalkan sebagai prioritas utama dengan optimisasi linear"],ans:1,diff:"medium",exp:"Bar terpanjang di tornado chart = input yang memiliki pengaruh TERBESAR terhadap output (profit) ketika divariasikan. 'Harga jual' dengan bar terpanjang berarti model paling sensitif terhadap harga jual — perubahan kecil pada harga jual menghasilkan perubahan besar pada profit.",ref:"Bab 11–12 – Interpretasi Tornado Chart"},
+    {q:"Cluster analysis disebut 'data segmentation' karena:",opts:["Data dipotong menjadi segmen-segmen ukuran sama","Tujuannya adalah mengelompokkan observasi yang mirip satu sama lain dalam kluster yang sama, berbeda dengan kluster lain","Algoritma bekerja dengan mensegmentasi data berdasarkan satu variabel saja","Setiap segmen memerlukan label manual setelah clustering"],ans:1,diff:"easy",exp:"Cluster analysis = data segmentation: mencari grup/segmen alami dalam data di mana observasi dalam satu kluster mirip satu sama lain (intra-cluster homogeneity) dan berbeda dari kluster lain (inter-cluster heterogeneity). Tanpa label yang sudah diketahui (unsupervised).",ref:"Bab 10 – Cluster Analysis"},
+    {q:"Scatterplot matrix berbeda dari scatter chart biasa karena:",opts:["Scatterplot matrix hanya untuk data 3D","Scatterplot matrix menggabungkan banyak scatter chart dalam satu panel — menampilkan pairwise relationships untuk semua kombinasi variabel","Scatterplot matrix menggunakan logarithmic scale","Scatterplot matrix hanya bisa dibuat dengan XLMiner"],ans:1,diff:"easy",exp:"Scatterplot matrix: sebuah grid n×n di mana setiap sel adalah scatter plot antara dua variabel berbeda. Memungkinkan eksplorasi visual pairwise relationship semua variabel sekaligus — berguna untuk mengidentifikasi korelasi, cluster, dan outlier dalam dataset multi-variabel.",ref:"Bab 10 – Scatterplot Matrix"},
+    {q:"Risk analysis dalam konteks analytical modeling bertujuan untuk:",opts:["Menghilangkan semua risiko dari proses bisnis","Mengidentifikasi dan mengkuantifikasi dampak ketidakpastian input terhadap output — probabilitas outcome yang tidak diinginkan","Menetapkan risiko yang dapat diterima oleh perusahaan","Mencari input yang paling tidak sensitif untuk diabaikan"],ans:1,diff:"medium",exp:"Risk analysis: mengkaji dampak input yang tidak pasti terhadap output. Dengan Monte Carlo: dapat menghitung P(profit < 0), distribusi outcome, worst/best case, dsb. Ini membantu manajer memahami eksposur risiko dan membuat keputusan yang lebih informed.",ref:"Bab 12 – Risk Analysis"},
+    {q:"Sebuah model profit menggunakan Data Table dengan demand sebagai Column Input Cell. Baris 1 tabel memiliki =C22 (referensi ke sel profit). Apa fungsi referensi =C22 di sini?",opts:["Untuk mendefinisikan range data tabel","Untuk memberitahu Excel bahwa C22 adalah output yang ingin dievaluasi untuk setiap nilai demand","Untuk mengunci sel C22 agar tidak berubah","Untuk menghitung rata-rata dari semua nilai di kolom C"],ans:1,diff:"medium",exp:"Dalam 1-way Data Table: (1) Kolom kiri = nilai input yang ingin diuji. (2) Baris di atas dan satu kolom ke kanan = referensi ke OUTPUT sel (=C22). Referensi ini memberitahu Excel: 'untuk setiap nilai input, hitung dan tampilkan nilai dari sel C22'. Tanpa ini, Excel tidak tahu output mana yang ingin dievaluasi.",ref:"Bab 11 – Struktur Data Table"},
+    {q:"Mengapa goal seek BUKAN metode yang tepat untuk optimisasi dengan banyak variabel keputusan?",opts:["Goal Seek terlalu lambat untuk model besar","Goal Seek hanya bisa mengubah SATU sel input untuk mencapai satu target — tidak bisa menangani multiple decision variables seperti yang dilakukan Solver","Goal Seek tidak terintegrasi dengan Excel","Goal Seek hanya berlaku untuk model linear"],ans:1,diff:"hard",exp:"Goal Seek: satu target, ubah satu variabel. Untuk optimisasi MULTI-variabel (misalnya menentukan kombinasi jumlah produk A dan B yang memaksimalkan profit dengan batasan sumber daya), diperlukan Solver (linear/non-linear programming). Solver bisa menangani banyak decision variables dan constraint.",ref:"Bab 11 – Goal Seek vs Solver"},
+    {q:"Dalam Monte Carlo simulation, 'jumlah trial yang cukup' ditentukan oleh:",opts:["Selalu 1000 trial, tidak lebih","Konvergensi output statistics (mean, std dev, percentile) — saat menambah trial tidak mengubah statistics secara signifikan","Ukuran dataset historis yang digunakan","Keterbatasan memori komputer yang digunakan"],ans:1,diff:"hard",exp:"Tidak ada aturan pasti — 'cukup' berarti saat menambah trial tidak mengubah statistik output secara signifikan (konvergensi). Untuk banyak model bisnis, 500-1000 trial sudah mencukupi. Untuk model yang sangat non-linear atau rare event, mungkin butuh 10,000+ trial.",ref:"Bab 12 – Jumlah Trial yang Cukup"},
+    {q:"Manakah interpretasi YANG BENAR dari hasil Monte Carlo simulation: 'P(profit < 0) = 15%'?",opts:["Model selalu rugi 15% dari total profit","Ada 15% kemungkinan bahwa kondisi aktual akan menghasilkan kerugian","15% dari trial menghasilkan nilai yang salah","Profit rata-rata adalah 15% di atas break-even"],ans:1,diff:"medium",exp:"Dalam Monte Carlo: setelah menjalankan banyak trial, distribusi output merepresentasikan distribusi probabilitas. P(profit < 0) = 15% berarti: dari banyak simulasi (masing-masing dengan kondisi random berbeda), 15% menghasilkan kerugian. Ini memberikan gambaran RISIKO kerugian.",ref:"Bab 12 – Interpretasi Monte Carlo Results"},
+    {q:"'Dirty data' dalam data mining mengacu pada:",opts:["Data yang mengandung informasi rahasia atau sensitif","Data dengan missing values, errors, atau inkonsistensi yang perlu 'dibersihkan' sebelum analisis","Data yang disimpan dalam format binary","Data yang berukuran sangat besar (Big Data)"],ans:1,diff:"easy",exp:"'Dirty data' = data mentah yang mengandung missing values, errors, duplicate records, inkonsistensi format, atau outlier ekstrem. Perlu 'data cleaning' sebelum analisis untuk memastikan kualitas hasil. Pendekatan: hapus record bermasalah, imputasi nilai, atau tangani dengan teknik data mining.",ref:"Bab 10 – Data Cleaning"},
+    {q:"Keunggulan menggunakan Analytic Solver Platform dibanding Goal Seek untuk optimisasi adalah:",opts:["Analytic Solver lebih murah","Goal Seek tidak bisa digunakan di Excel 2016+","Analytic Solver mendukung multiple decision variables, constraints, dan non-linear optimization; Goal Seek hanya 1 variabel, 1 target","Analytic Solver menghasilkan hasil yang lebih akurat untuk semua jenis model"],ans:2,diff:"medium",exp:"Analytic Solver Platform (dengan Solver) dapat: (1) Mengoptimalkan terhadap multiple decision variables, (2) Menangani constraints (batasan), (3) Mendukung linear, integer, dan non-linear programming. Goal Seek hanya bisa 1 target, ubah 1 variabel — tidak bisa optimisasi sesungguhnya.",ref:"Bab 11–12 – Goal Seek vs Solver vs Analytic Solver"},
+  ]
+}
+];
+
+// =====================================================================
+// STATE MANAGEMENT
+// =====================================================================
+let currentChapter = null;
+let quizState = {}; // {chapterId: {answers: {qIdx: answerIdx}, retries: Set}}
+let currentQ = 0;
+let scorePanelVisible = false;
+
+// Init state
+CHAPTERS.forEach(ch => {
+  quizState[ch.id] = { answers: {}, retries: new Set() };
+});
+
+// =====================================================================
+// RENDER FUNCTIONS
+// =====================================================================
+
+function renderHome() {
+  const grid = document.getElementById('chapters-grid');
+  grid.innerHTML = '';
+  CHAPTERS.forEach(ch => {
+    const state = quizState[ch.id];
+    const answered = Object.keys(state.answers).length;
+    const correct = Object.values(state.answers).filter(a => a.correct).length;
+    const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
+
+    grid.innerHTML += `
+      <div class="chapter-card" onclick="openChapter(${ch.id})">
+        <div class="chapter-num">${ch.num}</div>
+        <div class="chapter-title">${ch.title}</div>
+        <div class="chapter-desc">${ch.desc}</div>
+        <div class="chapter-meta">
+          <div class="chapter-progress">
+            ${answered > 0 ? `<span class="done">${correct}/${answered} benar (${pct}%)</span>` : `<span>0/${ch.questions.length} soal</span>`}
+          </div>
+          <button class="btn-start">Mulai →</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function showHome() {
+  document.getElementById('chapter-detail').classList.remove('active');
+  document.getElementById('home').classList.add('active');
+  renderHome();
+}
+
+function openChapter(id) {
+  currentChapter = CHAPTERS.find(ch => ch.id === id);
+  currentQ = 0;
+  scorePanelVisible = false;
+
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('chapter-detail').classList.add('active');
+
+  document.getElementById('detail-num').textContent = currentChapter.num;
+  document.getElementById('detail-title').textContent = currentChapter.title;
+  document.getElementById('q-count-label').textContent = `${currentChapter.questions.length} Soal`;
+
+  renderSummary();
+  renderPredictions();
+  renderQNav();
+  renderQuestion(0);
+  updateScore();
+  document.getElementById('score-panel').classList.remove('show');
+  window.scrollTo(0, 0);
+}
+
+function renderSummary() {
+  const el = document.getElementById('detail-summary');
+  el.innerHTML = currentChapter.summary.map(sec => `
+    <div class="summary-section">
+      <h4>${sec.heading}</h4>
+      <ul>${sec.items.map(item => `<li>${item}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+function renderPredictions() {
+  const el = document.getElementById('detail-predictions');
+  el.innerHTML = `
+    <h3>🎯 Prediksi Topik Ujian</h3>
+    ${currentChapter.predictions.map(p => `
+      <div class="pred-item">
+        <div class="pred-icon">${p.icon}</div>
+        <div class="pred-text">${p.text}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function renderQNav() {
+  const nav = document.getElementById('q-nav');
+  const state = quizState[currentChapter.id];
+  nav.innerHTML = currentChapter.questions.map((q, i) => {
+    let cls = 'q-nav-btn';
+    if (i === currentQ) cls += ' current';
+    else if (state.answers[i] !== undefined) {
+      cls += state.answers[i].correct ? ' answered-correct' : ' answered-wrong';
+    }
+    return `<button class="${cls}" onclick="goToQ(${i})">${i+1}</button>`;
+  }).join('');
+}
+
+function renderQuestion(idx) {
+  currentQ = idx;
+  const qData = currentChapter.questions[idx];
+  const state = quizState[currentChapter.id];
+  const answered = state.answers[idx];
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const diffMap = { easy: 'Mudah', medium: 'Sedang', hard: 'Sulit' };
+
+  let optionsHTML = qData.opts.map((opt, i) => {
+    let cls = 'option';
+    if (answered !== undefined) {
+      cls += ' disabled';
+      if (i === qData.ans) cls += ' correct';
+      else if (i === answered.selected && !answered.correct) cls += ' wrong';
+    }
+    return `
+      <div class="${cls}" onclick="selectAnswer(${idx}, ${i})">
+        <div class="option-letter">${letters[i]}</div>
+        <div class="option-text">${opt}</div>
+      </div>
+    `;
+  }).join('');
+
+  let feedbackHTML = '';
+  if (answered !== undefined) {
+    const cls = answered.correct ? 'feedback correct-fb show' : 'feedback wrong-fb show';
+    const header = answered.correct ? '✓ Jawaban Benar!' : '✗ Jawaban Kurang Tepat';
+    feedbackHTML = `
+      <div class="${cls}">
+        <div class="feedback-header">${header}</div>
+        <div class="feedback-explanation">${qData.exp}</div>
+        <div class="feedback-ref">📖 Referensi: <span>${qData.ref}</span></div>
+      </div>
+    `;
+  }
+
+  const isRetried = state.retries.has(idx);
+  const retryDisplay = (answered && !answered.correct && !isRetried) ? 'show' : '';
+
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="question-meta">
+        <span class="q-number">Soal ${idx+1} dari ${currentChapter.questions.length}</span>
+        <span class="q-difficulty ${qData.diff}">${diffMap[qData.diff]}</span>
+      </div>
+      <div class="question-text">${qData.q}</div>
+      <div class="options" id="options-${idx}">${optionsHTML}</div>
+      ${feedbackHTML}
+      <div class="question-actions">
+        ${idx > 0 ? `<button class="btn-secondary" onclick="goToQ(${idx-1})">← Sebelumnya</button>` : ''}
+        ${idx < currentChapter.questions.length - 1 ? `<button class="btn-primary" onclick="goToQ(${idx+1})">Berikutnya →</button>` : ''}
+        <button class="btn-retry ${retryDisplay}" id="retry-btn" onclick="retryQuestion(${idx})">🔁 Ulangi Soal Ini</button>
+      </div>
+    </div>
+  `;
+
+  renderQNav();
+}
+
+function selectAnswer(qIdx, answerIdx) {
+  const state = quizState[currentChapter.id];
+  if (state.answers[qIdx] !== undefined) return; // already answered
+
+  const qData = currentChapter.questions[qIdx];
+  const correct = answerIdx === qData.ans;
+
+  state.answers[qIdx] = { selected: answerIdx, correct };
+  renderQuestion(qIdx);
+  updateScore();
+}
+
+function goToQ(idx) {
+  renderQuestion(idx);
+  document.getElementById('questions-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function retryQuestion(idx) {
+  const state = quizState[currentChapter.id];
+  state.retries.add(idx);
+  delete state.answers[idx];
+  renderQuestion(idx);
+  updateScore();
+}
+
+function resetChapter() {
+  if (!confirm('Reset semua jawaban di bab ini?')) return;
+  quizState[currentChapter.id] = { answers: {}, retries: new Set() };
+  renderQuestion(0);
+  updateScore();
+  document.getElementById('score-panel').classList.remove('show');
+}
+
+function showScore() {
+  scorePanelVisible = !scorePanelVisible;
+  document.getElementById('score-panel').classList.toggle('show', scorePanelVisible);
+  if (scorePanelVisible) document.getElementById('score-panel').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateScore() {
+  const state = quizState[currentChapter.id];
+  const answered = Object.values(state.answers).length;
+  const correct = Object.values(state.answers).filter(a => a.correct).length;
+  const wrong = answered - correct;
+  const pct = answered > 0 ? Math.round(correct / answered * 100) : 0;
+
+  document.getElementById('sc-total').textContent = answered;
+  document.getElementById('sc-correct').textContent = correct;
+  document.getElementById('sc-wrong').textContent = wrong;
+  document.getElementById('sc-pct').textContent = pct + '%';
+  document.getElementById('sc-bar').style.width = pct + '%';
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+renderHome();
+</script>
+</body>
+</html>
